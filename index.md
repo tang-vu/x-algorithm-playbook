@@ -102,8 +102,8 @@ This playbook is based on analysis of:
 
 <div align="center">
 
-**Star this repo if it helped you grow on X!**
+<p><strong>Star this repo if it helped you grow on X!</strong></p>
 
-[View on GitHub](https://github.com/tang-vu/x-algorithm-playbook)
+<p><a href="https://github.com/tang-vu/x-algorithm-playbook">View on GitHub</a></p>
 
 </div>
