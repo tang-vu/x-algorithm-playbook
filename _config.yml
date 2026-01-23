@@ -1,0 +1,6 @@
+theme: jekyll-theme-minimal
+title: X Algorithm Playbook
+description: The definitive guide to maximizing your reach on X (Twitter), based on reverse-engineering the open-source algorithm.
+logo: assets/logo.png
+show_downloads: false
+google_analytics:

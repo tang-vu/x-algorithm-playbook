@@ -162,9 +162,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## Sources
 
-- [X Algorithm Source Code](https://github.com/twitter/the-algorithm)
+- [X Algorithm Source Code (xAI)](https://github.com/xai-org/x-algorithm) — Primary source for this playbook
+- [X Algorithm (Twitter Archive)](https://github.com/twitter/the-algorithm)
 - [X Algorithm ML Components](https://github.com/twitter/the-algorithm-ml)
-- Original analysis from internal codebase review
+- Original analysis from codebase review
 
 ---
 
