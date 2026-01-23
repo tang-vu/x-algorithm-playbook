@@ -5,16 +5,22 @@ title: X Algorithm Playbook
 
 <div align="center">
 
-# X Algorithm Playbook
+<h1>X Algorithm Playbook</h1>
 
-### The definitive guide to maximizing your reach on X (Twitter)
+<h3>The definitive guide to maximizing your reach on X (Twitter)</h3>
 
-**Based on reverse-engineering the open-source algorithm**
+<p><strong>Based on reverse-engineering the open-source algorithm</strong></p>
 
-[![GitHub stars](https://img.shields.io/github/stars/tang-vu/x-algorithm-playbook?style=for-the-badge&logo=github)](https://github.com/tang-vu/x-algorithm-playbook)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+<p>
+  <a href="https://github.com/tang-vu/x-algorithm-playbook">
+    <img src="https://img.shields.io/github/stars/tang-vu/x-algorithm-playbook?style=for-the-badge&logo=github" alt="GitHub stars">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License">
+  </a>
+</p>
 
----
+<hr>
 
 </div>
 
