@@ -1,0 +1,218 @@
+# The 10 Golden Rules of X Algorithm
+
+> These are the most important rules distilled from the X algorithm source code. Master these and you'll outperform 95% of accounts.
+
+---
+
+## Rule 1: Replies Are King 👑
+
+**Why:** Reply probability has the highest positive weight (~2×) in the scoring formula.
+
+**Do:**
+- End posts with questions
+- Make controversial (but not offensive) takes
+- Create "fill in the blank" posts
+- Ask for opinions and experiences
+
+**Don't:**
+- Post statements with no engagement hook
+- Make content that requires no response
+
+**Algorithm source:** `weighted_scorer.rs` - `REPLY_WEIGHT`
+
+---
+
+## Rule 2: Avoid Negative Actions At All Costs ⚠️
+
+**Why:** Negative actions have MASSIVE penalties:
+- Block = -10× the value of a like
+- Report = -20× the value of a like
+- Mute = -5× the value of a like
+
+**Do:**
+- Stay in your niche
+- Be authentic and helpful
+- Avoid rage-bait that triggers blocks
+
+**Don't:**
+- Spam replies on unrelated posts
+- Be overly political or divisive
+- Post content that might get reported
+
+**Algorithm source:** `weighted_scorer.rs` - `BLOCK_AUTHOR_WEIGHT`, `REPORT_WEIGHT`
+
+---
+
+## Rule 3: Space Your Posts (Author Diversity Penalty) ⏰
+
+**Why:** The algorithm applies exponential decay to multiple posts from the same author:
+- 1st post: 100% score
+- 2nd post: ~76% score
+- 3rd post: ~59% score
+- Eventually floors at ~20%
+
+**Do:**
+- Post 3-4 hours apart
+- Use threads instead of separate posts (counts as one "author slot")
+- Quality over quantity
+
+**Don't:**
+- Post 5 tweets in an hour
+- Think more posts = more reach
+
+**Algorithm source:** `author_diversity_scorer.rs`
+
+---
+
+## Rule 4: In-Network First 🏠
+
+**Why:** Out-of-network content is multiplied by `OON_WEIGHT_FACTOR` (less than 1.0). Your followers see you first.
+
+**Do:**
+- Focus on building genuine followers
+- Engage with your existing audience
+- Create content your followers want to share
+
+**Don't:**
+- Buy followers (they don't engage = negative signal)
+- Ignore your existing audience chasing new ones
+
+**Algorithm source:** `oon_scorer.rs`
+
+---
+
+## Rule 5: Video > Image > Text (With Caveats) 🎬
+
+**Why:** Video Quality View (VQV) gets its own weight bonus, BUT only if video exceeds minimum duration threshold.
+
+**Do:**
+- Create videos longer than ~10 seconds
+- Add captions (silent scrolling)
+- Hook in first 3 seconds
+- Native upload (not YouTube links)
+
+**Don't:**
+- Post super short clips that don't qualify
+- Post without thumbnails
+
+**Algorithm source:** `weighted_scorer.rs` - `VQV_WEIGHT`, `MIN_VIDEO_DURATION_MS`
+
+---
+
+## Rule 6: Dwell Time Is a Signal ⏱️
+
+**Why:** The algorithm tracks both binary dwell (did they stop?) and continuous dwell time (how long?).
+
+**Do:**
+- Write longer, engaging content
+- Use threads for complex topics
+- Format for readability (spacing, bullets, emojis)
+- Create content worth re-reading
+
+**Don't:**
+- Post one-liners only
+- Create skimmable-only content
+
+**Algorithm source:** `phoenix_scorer.rs` - `DWELL_WEIGHT`, `CONT_DWELL_TIME_WEIGHT`
+
+---
+
+## Rule 7: Don't Get Filtered 🚫
+
+**Why:** 12 different filters can COMPLETELY HIDE your content before scoring even happens.
+
+**Filters that can block you:**
+1. Age filter (too old)
+2. Duplicate filter
+3. Self-tweet filter
+4. Muted keyword filter
+5. Blocked/muted author filter
+6. Spam filter (VF)
+7. Previously seen filter
+8. Subscription eligibility filter
+
+**Do:**
+- Post at peak times for freshness
+- Avoid spammy keywords ("DM me", "link in bio" spam)
+- Don't post the same thing twice
+
+**Don't:**
+- Use flagged keywords
+- Try to game the system with duplicate content
+
+**Algorithm source:** `home-mixer/filters/`
+
+---
+
+## Rule 8: Engage Authentically 🤝
+
+**Why:** The algorithm uses your engagement history to build your "user embedding." If you engage in your niche, you'll be matched with similar content creators and audiences.
+
+**Do:**
+- Like/reply to posts in your niche
+- Build relationships with similar creators
+- Be genuinely helpful in replies
+
+**Don't:**
+- Mass-like random content
+- Use engagement pods (pattern detected)
+- Ignore your community
+
+**Algorithm source:** `phoenix/recsys_retrieval_model.py` - Two-Tower model
+
+---
+
+## Rule 9: Niche Down for Retrieval 🎯
+
+**Why:** The Two-Tower retrieval system matches user embeddings to content embeddings via dot product similarity. Clear, consistent topics = stronger embedding signal.
+
+**Do:**
+- Focus on 1-3 related topics
+- Use consistent keywords/hashtags
+- Build topical authority
+
+**Don't:**
+- Post random content across many topics
+- Confuse your audience (and the algorithm)
+
+**Algorithm source:** `phoenix/recsys_retrieval_model.py`
+
+---
+
+## Rule 10: Quality > Quantity 📊
+
+**Why:** All the rules above compound. One viral post beats 10 mediocre ones because:
+- No author diversity penalty
+- More replies per post
+- Higher dwell time
+- More authentic engagement
+
+**Do:**
+- Spend time crafting content
+- Study what works
+- Iterate and improve
+
+**Don't:**
+- Spray and pray
+- Post just to post
+
+---
+
+## Quick Reference Card
+
+| Rule | Key Metric | Action |
+|------|------------|--------|
+| 1 | Replies | Ask questions |
+| 2 | Blocks/Reports | Stay authentic |
+| 3 | Post frequency | 3-4 hr spacing |
+| 4 | Follower quality | Build genuine following |
+| 5 | Media type | Native video > 10s |
+| 6 | Dwell time | Longer content |
+| 7 | Filters | Avoid spam patterns |
+| 8 | Engagement | Interact in niche |
+| 9 | Topic focus | Niche down |
+| 10 | Quality | Fewer, better posts |
+
+---
+
+**Next:** [Understanding the Scoring System →](01-scoring-system.md)
