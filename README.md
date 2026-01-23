@@ -8,7 +8,7 @@
 
 ## Why This Exists
 
-X (formerly Twitter) [open-sourced their recommendation algorithm](https://github.com/twitter/the-algorithm) in 2023. This playbook distills thousands of lines of code into **actionable rules** that anyone can follow to maximize their reach.
+X (formerly Twitter) open-sourced their recommendation algorithm, and xAI [released an updated version](https://github.com/xai-org/x-algorithm) in January 2026. This playbook distills thousands of lines of code into **actionable rules** that anyone can follow to maximize their reach.
 
 **No fluff. No guesswork. Just algorithm-backed strategies.**
 
