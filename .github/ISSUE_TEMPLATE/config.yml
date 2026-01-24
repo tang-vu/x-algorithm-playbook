@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: General Discussion
+    url: https://github.com/tang-vu/x-algorithm-playbook/discussions
+    about: Ask questions or discuss ideas
+  - name: Read the Playbook
+    url: https://tang-vu.github.io/x-algorithm-playbook
+    about: View the full playbook on GitHub Pages
