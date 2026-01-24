@@ -1,0 +1,8 @@
+# Default owner for everything
+* @tang-vu
+
+# Specific areas (add more maintainers as project grows)
+/rules/ @tang-vu
+/checklists/ @tang-vu
+/case-studies/ @tang-vu
+/reference/ @tang-vu

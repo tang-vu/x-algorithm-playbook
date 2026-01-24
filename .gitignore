@@ -1,7 +1,14 @@
 # Dependencies
 node_modules/
 .pnpm-store/
-
+.claude
+.opencode
+CLAUDE.md 
+OPENCODE.md
+AGENTS.md
+node_modules/
+plans/
+.cursor
 # IDE
 .idea/
 .vscode/
