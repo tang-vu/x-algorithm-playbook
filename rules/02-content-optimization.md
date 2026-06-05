@@ -156,6 +156,37 @@ The first line determines if people stop scrolling.
 
 ---
 
+## Content Understanding (grox)
+
+> 🆕 **May 2026 update.** Before any scoring happens, a content-understanding service called **`grox`** runs **classifiers and embedders** over your post. It decides *what your post is about* — the topic labels, the embedding used for retrieval, and the safety signals. The ranking model then learns relevance from engagement; **there is no manual keyword or hashtag boost.**
+
+**The practical rule:** write so the *machine* understands your topic on the first pass, not just humans.
+
+| ✅ Helps `grox` read you | ❌ Confuses `grox` |
+|-------------------------|--------------------|
+| One clear topic per post | Three unrelated ideas in one post |
+| Plain, specific language ("B2B SaaS churn") | Vague subtweets ("this changes everything 👀") |
+| On-topic media that matches the text | Random meme unrelated to the point |
+| Consistent vocabulary across your posts | Topic-hopping that smears your embedding |
+| Saying the thing directly | Burying the subject in irony/ambiguity |
+
+**Why it pays off:**
+
+```
+Clear post → clean embedding → matches the RIGHT audience
+             → also eligible for Phoenix Topics + MoE discovery
+             → higher P(reply/like) because it reached people who care
+
+Vague post → noisy embedding → matched to no one in particular
+             → low engagement → algorithm stops distributing it
+```
+
+**Hashtags & keywords:** they are *not* a ranking boost. Their only value now is as **topic signal** that helps `grox` classify you (and for human search). One or two relevant, real-word hashtags help comprehension; stuffing them adds noise and can trip the **muted-keyword filter**. (See [Filter System](../reference/filter-system.md).)
+
+> Bottom line: clarity *is* distribution. The clearer your post's topic, the more reach doors ([Phoenix Topics, MoE](06-growth-strategies.md#may-2026-reach-paths)) it can walk through.
+
+---
+
 ## Content Calendar Strategy
 
 Based on Author Diversity Penalty:
@@ -177,8 +208,9 @@ Before posting, ask:
 
 - [ ] Does my hook stop the scroll?
 - [ ] Will people reply to this?
+- [ ] **Could a classifier tell exactly what this post is about?** (grox clarity)
 - [ ] Is this formatted for easy reading?
-- [ ] Does the media add value?
+- [ ] Does the media add value (and match the topic)?
 - [ ] Am I providing unique value?
 - [ ] Have I spaced this from my last post?
 - [ ] Is there a clear engagement hook at the end?

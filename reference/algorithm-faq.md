@@ -8,15 +8,15 @@
 
 ### Q: Is the X algorithm really open source?
 
-**A:** Yes, partially. X released the recommendation algorithm code in April 2023. The core logic for scoring, filtering, and ranking is public. However, specific parameter values (weights, thresholds) are redacted for security.
+**A:** Yes. Twitter first open-sourced the recommendation code in April 2023, and **xAI shipped a major rewrite on May 15, 2026** ([github.com/xai-org/x-algorithm](https://github.com/xai-org/x-algorithm), Apache-2.0). The 2026 release is the primary source for this playbook: it includes a runnable end-to-end pipeline, the `grox` content-understanding service, candidate sourcing, and a **downloadable mini Phoenix model** (~2.8 GB via Git LFS) you can actually run. Core logic for scoring, filtering, and ranking is public; the exact production weights and the full-size model are still redacted.
 
-**Source:** [github.com/twitter/the-algorithm](https://github.com/twitter/the-algorithm)
+**Source:** [github.com/xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) · [github.com/twitter/the-algorithm](https://github.com/twitter/the-algorithm)
 
 ---
 
 ### Q: How often does the algorithm change?
 
-**A:** The open-sourced version is a snapshot. X continues to iterate internally. The fundamental mechanics (scoring, filtering, Two-Tower retrieval) are likely stable, but specific weights and parameters change.
+**A:** xAI now publishes updates to the open-source repo **every 4 weeks, with developer notes** explaining what changed. The fundamental mechanics (Grok-based scoring, filtering, two-tower retrieval) are stable; specific weights, sources, and model configs evolve release to release. Re-check the repo's developer notes monthly.
 
 ---
 
@@ -75,7 +75,15 @@
 
 **A:** Through the Two-Tower retrieval system (Phoenix). Your content embedding is matched with user embeddings via similarity search. Being consistent in your niche creates a cleaner embedding that matches better.
 
-**Source:** `phoenix/recsys_retrieval_model.py`
+**Source:** `phoenix/` (two-tower retrieval)
+
+---
+
+### Q: What are the new out-of-network sources in the May 2026 update?
+
+**A:** Out-of-network reach is no longer a single funnel. The 2026 release exposes several candidate sources: **Phoenix Retrieval** (generic similarity search), **Phoenix Topics** (topical discovery), **Phoenix MoE** (mixture-of-experts for specialized interests), **Who-to-Follow**, and **Ads/Prompts**. Practically: a post with a sharp, consistent topic can be surfaced by Topics/MoE even when generic retrieval would miss it. Topic clarity is now a multi-door reach lever.
+
+**Source:** `candidate-pipeline/`, `phoenix/`
 
 ---
 
@@ -154,7 +162,15 @@ Use relevant hashtags sparingly.
 2. **Candidate Tower:** Encodes posts into embeddings
 3. **Matching:** Dot product similarity finds relevant posts
 
-**Source:** `phoenix/recsys_retrieval_model.py`
+**Source:** `phoenix/` (two-tower retrieval)
+
+---
+
+### Q: What is `grox` / content understanding?
+
+**A:** New in May 2026: `grox` is a dedicated content-understanding service that runs **classifiers and embedders** over every post during hydration — *before* scoring. It produces the topic labels, embeddings, and safety signals the rest of the pipeline reads. Key takeaway: there is **no manual keyword/hashtag boost** for relevance. `grox` decides what your post is *about*, and the model learns relevance from engagement. Clear, on-topic content embeds cleanly and matches the right audiences; vague content embeds noisily and reaches no one.
+
+**Source:** `grox/`
 
 ---
 

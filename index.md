@@ -35,6 +35,8 @@ NEGATIVE: block (-10×), mute, report (-20×), "not interested"
 
 **Key insight:** The algorithm predicts 19 different user actions and weights them. Maximize positive, avoid negative.
 
+> 🆕 **Updated for the May 15, 2026 release** (refreshed every 4 weeks): new `grox` content-understanding service, new out-of-network reach paths (Phoenix Topics, MoE, Who-to-Follow), and a downloadable mini Phoenix model. **[See what changed →](reference/may-2026-update.md)**
+
 ---
 
 ## Quick Navigation
@@ -44,6 +46,7 @@ NEGATIVE: block (-10×), mute, report (-20×), "not interested"
 | [10 Golden Rules](rules/00-golden-rules.md) | [Scoring System](rules/01-scoring-system.md) |
 | [Pre-Post Checklist](checklists/pre-post-checklist.md) | [Action Weights](reference/action-weights.md) |
 | [Common Mistakes](case-studies/common-mistakes.md) | [Filter System](reference/filter-system.md) |
+| [What's New (May 2026)](reference/may-2026-update.md) | [Algorithm FAQ](reference/algorithm-faq.md) |
 
 ---
 
@@ -86,7 +89,7 @@ x-algorithm-playbook/
 ├── rules/           # 7 core strategy guides
 ├── checklists/      # 3 actionable checklists
 ├── case-studies/    # 2 real-world examples
-└── reference/       # 3 technical deep-dives
+└── reference/       # 4 technical deep-dives
 ```
 
 ---

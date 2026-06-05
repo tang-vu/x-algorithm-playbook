@@ -8,9 +8,11 @@
 
 ## Why This Exists
 
-X (formerly Twitter) open-sourced their recommendation algorithm, and xAI [released an updated version](https://github.com/xai-org/x-algorithm) in January 2026. This playbook distills thousands of lines of code into **actionable rules** that anyone can follow to maximize their reach.
+X (formerly Twitter) open-sourced their recommendation algorithm, and xAI [shipped a major update](https://github.com/xai-org/x-algorithm) on **May 15, 2026** — now refreshed **every 4 weeks** with developer notes. This playbook distills thousands of lines of code into **actionable rules** that anyone can follow to maximize their reach.
 
 **No fluff. No guesswork. Just algorithm-backed strategies.**
+
+> 🆕 **New in the May 2026 update:** a content-understanding service (`grox`), new out-of-network reach paths (Phoenix Topics, Phoenix MoE, Who-to-Follow), a unified end-to-end pipeline, and a downloadable mini Phoenix model. **[See what changed →](reference/may-2026-update.md)**
 
 ---
 
@@ -23,6 +25,7 @@ X (formerly Twitter) open-sourced their recommendation algorithm, and xAI [relea
 | Optimize before posting | [Pre-Post Checklist](checklists/pre-post-checklist.md) |
 | Avoid penalties | [Avoiding Penalties](rules/05-avoiding-penalties.md) |
 | Deep dive | [Action Weights Reference](reference/action-weights.md) |
+| See the latest changes | [May 2026 Update](reference/may-2026-update.md) |
 
 ---
 
@@ -66,6 +69,7 @@ x-algorithm-playbook/
 └── reference/              # Technical deep-dives
     ├── action-weights.md
     ├── filter-system.md
+    ├── may-2026-update.md      ← What changed in the latest release
     └── algorithm-faq.md
 ```
 
@@ -99,9 +103,12 @@ The algorithm uses a **Grok-based transformer model** (Phoenix) to predict engag
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  CANDIDATE SOURCING                                              │
-│  ├── Thunder: Posts from accounts user follows (in-network)     │
-│  └── Phoenix: ML-discovered posts (out-of-network)              │
+│  CANDIDATE SOURCING                                             │
+│  ├── Thunder: in-network posts from accounts you follow         │
+│  ├── Phoenix Retrieval: ML-discovered out-of-network posts      │
+│  ├── Phoenix Topics + Phoenix MoE: topical / expert discovery   │
+│  └── Who-to-Follow · Ads · Prompts                              │
+│  (grox content-understanding tags + embeds every post first)    │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -115,10 +122,11 @@ The algorithm uses a **Grok-based transformer model** (Phoenix) to predict engag
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  SCORING (Phoenix ML Model)                                      │
-│  ├── Predicts P(like), P(reply), P(retweet)... for 19 actions   │
-│  ├── Weighted sum = final score                                  │
-│  └── Author diversity penalty applied                            │
+│  SCORING (sequential scorers)                                   │
+│  ├── Phoenix Scorer: predicts 19 actions via Grok transformer   │
+│  ├── Weighted Scorer: Σ (weight × P(action)) = base score       │
+│  ├── Author Diversity Scorer: attenuates repeated authors       │
+│  └── OON Scorer: down-weights out-of-network content            │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼

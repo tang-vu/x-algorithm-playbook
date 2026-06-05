@@ -164,18 +164,19 @@
 
 ## Rule 9: Niche Down for Retrieval 🎯
 
-**Why:** The Two-Tower retrieval system matches user embeddings to content embeddings via dot product similarity. Clear, consistent topics = stronger embedding signal.
+**Why:** The Two-Tower retrieval system matches user embeddings to content embeddings via dot product similarity. Clear, consistent topics = stronger embedding signal. As of May 2026, a content-understanding service (`grox`) classifies and embeds every post **before** scoring — so how cleanly your post is *understood* directly decides which audiences it can reach. Crisp topics also open the new **Phoenix Topics** retrieval door.
 
 **Do:**
 - Focus on 1-3 related topics
-- Use consistent keywords/hashtags
+- Be unambiguous about what each post is about (clear language, on-topic media)
 - Build topical authority
 
 **Don't:**
 - Post random content across many topics
+- Bury the topic in vague phrasing the classifier can't read
 - Confuse your audience (and the algorithm)
 
-**Algorithm source:** `phoenix/recsys_retrieval_model.py`
+**Algorithm source:** `phoenix/` (two-tower retrieval) · `grox/` (content understanding)
 
 ---
 

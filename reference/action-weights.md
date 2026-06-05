@@ -12,6 +12,8 @@ The X algorithm predicts the probability of 19 different user actions and combin
 Final Score = Σ (weight_i × P(action_i))
 ```
 
+> ✅ The **19 action heads** are confirmed in the downloadable mini Phoenix model config (May 2026 release). The repo's developer notes name 15 of them explicitly: favorite, reply, repost, quote, click, profile click, video view, photo expand, share, dwell, follow author, not interested, block author, mute author, report.
+
 ---
 
 ## Positive Actions
@@ -135,12 +137,12 @@ Both are weighted and contribute to score.
 
 ## Algorithm Source Files
 
-| Component | Source File |
-|-----------|-------------|
-| Weight application | `home-mixer/scorers/weighted_scorer.rs` |
-| Score extraction | `home-mixer/scorers/phoenix_scorer.rs` |
-| Action definitions | `xai_recsys_proto::ActionName` |
-| Continuous actions | `xai_recsys_proto::ContinuousActionName` |
+| Component | Where |
+|-----------|-------|
+| Weight application (Weighted Scorer) | `home-mixer/scorers/` |
+| Score extraction (Phoenix Scorer) | `home-mixer/scorers/` |
+| 19 action heads | `phoenix/` model config |
+| Predicted-action definitions | `xai_recsys_proto` |
 
 ---
 

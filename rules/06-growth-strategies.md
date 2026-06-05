@@ -59,6 +59,40 @@ How the algorithm decides to show your content to non-followers:
 
 ---
 
+## May 2026 Reach Paths
+
+> 🆕 The May 15, 2026 update exposes **multiple out-of-network doors**, not just generic retrieval. Each is a separate way to reach non-followers — and they reward different things.
+
+| Door | What gets you in | How to optimize |
+|------|------------------|-----------------|
+| **Phoenix Retrieval** | Embedding similarity to a user's history | Strong, consistent niche embedding |
+| **Phoenix Topics** | Your post maps cleanly to a topic the user engages with | One sharp topic per post; let `grox` classify you correctly |
+| **Phoenix MoE** | A specialist "expert" matches your interest area | Depth + consistency in a sub-niche (expert signal) |
+| **Who-to-Follow** | You're suggested as an account worth following | High follow-through rate, clear profile + bio, consistent value |
+| **Thunder (in-network)** | Followers, instantly | Keep existing followers engaged; avoid unfollows/mutes |
+
+### What changed strategically
+
+```
+OLD mental model:  "go viral in retrieval or stay invisible"
+NEW mental model:  several doors, each opened by TOPIC CLARITY + CONSISTENCY
+
+→ A mid-engagement post on a SHARP topic can still get OON reach
+  via Topics / MoE, even if generic retrieval would skip it.
+→ Topic-hopping smears your embedding and shuts ALL the doors.
+```
+
+### How to play it
+
+1. **Pick a topic per post and commit to it** — clarity is what `grox` and Topics read.
+2. **Go deep in a sub-niche** — that's what triggers the MoE "expert" match.
+3. **Optimize your profile for Who-to-Follow** — clear bio, consistent feed, obvious "what I'm about."
+4. **Don't dilute** — one off-topic post weakens the embedding that every door depends on.
+
+See [Scoring System → Where Candidates Come From](01-scoring-system.md#where-candidates-come-from) for how these sources feed the pipeline.
+
+---
+
 ## Niche Strategy
 
 ### Why Niching Down Works

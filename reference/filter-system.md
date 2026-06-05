@@ -16,6 +16,8 @@ Your Post → FILTERS → Scoring → Ranking → Feed
 
 **Key insight:** A filtered post gets ZERO visibility, regardless of quality.
 
+> ✅ **Confirmed in the May 2026 release.** The repo applies **10 pre-scoring filters** (`DropDuplicates`, `CoreDataHydration`, `Age`, `Selfpost`, `RepostDeduplication`, `IneligibleSubscription`, `PreviouslySeen`, `PreviouslyServed`, `MutedKeyword`, `AuthorSocialgraph`) and **2 post-selection filters** (`VFFilter`, `DedupConversation`) — the 12 below.
+
 ---
 
 ## The 12 Filters
