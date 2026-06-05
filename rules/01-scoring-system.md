@@ -16,11 +16,12 @@ Where:
 - `P(action_i)` = Probability of user taking action (predicted by ML model)
 - `weight_i` = Importance weight for that action
 
-**Example:**
+**Example (illustrative coefficients — the real values are redacted):**
 ```
-Score = (0.3 × P(like)) + (0.6 × P(reply)) + (0.4 × P(retweet)) + ...
-                         - (0.5 × P(block)) - (1.0 × P(report))
+Score = (w_like × P(like)) + (w_reply × P(reply)) + (w_retweet × P(retweet)) + ...
+                           - (w_block × P(block)) - (w_report × P(report))
 ```
+> The weight constants (`REPLY_WEIGHT`, `BLOCK_AUTHOR_WEIGHT`, …) live in a `params` module that is **not published** in the open-source repo. We know the structure and signs; we do **not** know the exact multipliers. See [Action Weights → exact values are redacted](../reference/action-weights.md#the-exact-weight-values-are-redacted).
 
 ---
 
@@ -159,25 +160,35 @@ This means:
 ### Step 1: Weighted Scorer
 
 ```rust
-// From weighted_scorer.rs
-combined_score = 
-    apply(favorite_score, FAVORITE_WEIGHT)
-  + apply(reply_score, REPLY_WEIGHT)        // ~2× other weights
-  + apply(retweet_score, RETWEET_WEIGHT)
-  + apply(quote_score, QUOTE_WEIGHT)
-  + apply(share_score, SHARE_WEIGHT)
-  + apply(click_score, CLICK_WEIGHT)
-  + apply(profile_click_score, PROFILE_CLICK_WEIGHT)
-  + apply(vqv_score, vqv_weight)            // Only if video > min duration
-  + apply(dwell_score, DWELL_WEIGHT)
-  + apply(dwell_time, CONT_DWELL_TIME_WEIGHT)
-  + apply(follow_author_score, FOLLOW_AUTHOR_WEIGHT)
-  // Negative weights
-  + apply(not_interested_score, NOT_INTERESTED_WEIGHT)  // Negative
-  + apply(block_author_score, BLOCK_AUTHOR_WEIGHT)      // ~-10×
-  + apply(mute_author_score, MUTE_AUTHOR_WEIGHT)        // ~-5×
-  + apply(report_score, REPORT_WEIGHT)                  // ~-20×
+// weighted_scorer.rs — actual structure (the *_WEIGHT values are redacted)
+// apply(score, weight) = score.unwrap_or(0.0) * weight   // missing prediction → 0
+combined_score =
+    apply(favorite_score,            FAVORITE_WEIGHT)
+  + apply(reply_score,               REPLY_WEIGHT)
+  + apply(retweet_score,             RETWEET_WEIGHT)
+  + apply(photo_expand_score,        PHOTO_EXPAND_WEIGHT)
+  + apply(click_score,               CLICK_WEIGHT)
+  + apply(profile_click_score,       PROFILE_CLICK_WEIGHT)
+  + apply(vqv_score,                 vqv_weight)   // 0 unless video_duration_ms > MIN_VIDEO_DURATION_MS
+  + apply(share_score,               SHARE_WEIGHT)
+  + apply(share_via_dm_score,        SHARE_VIA_DM_WEIGHT)
+  + apply(share_via_copy_link_score, SHARE_VIA_COPY_LINK_WEIGHT)
+  + apply(dwell_score,               DWELL_WEIGHT)
+  + apply(quote_score,               QUOTE_WEIGHT)
+  + apply(quoted_click_score,        QUOTED_CLICK_WEIGHT)
+  + apply(dwell_time,                CONT_DWELL_TIME_WEIGHT)   // continuous
+  + apply(follow_author_score,       FOLLOW_AUTHOR_WEIGHT)
+  + apply(not_interested_score,      NOT_INTERESTED_WEIGHT)    // negative
+  + apply(block_author_score,        BLOCK_AUTHOR_WEIGHT)      // negative
+  + apply(mute_author_score,         MUTE_AUTHOR_WEIGHT)       // negative
+  + apply(report_score,              REPORT_WEIGHT);           // negative
+
+// Then offset_score(): if the sum goes negative it is rescaled by
+// NEGATIVE_WEIGHTS_SUM / WEIGHTS_SUM and shifted by NEGATIVE_SCORES_OFFSET,
+// then normalize_score() is applied.
 ```
+
+> ✅ **Verified:** the 19 terms, their signs, the VQV duration gate, and the offset logic are real (`weighted_scorer.rs`). ❌ **Redacted:** every `*_WEIGHT` number (the `params` module is not in the open-source repo).
 
 ### Step 2: Author Diversity Scorer
 
@@ -214,8 +225,8 @@ if !in_network {
 
 | Algorithm Behavior | Your Strategy |
 |-------------------|---------------|
-| Replies weighted highest | Create discussion-starting content |
-| Blocks are -10× likes | Avoid controversial content that triggers blocks |
+| Replies treated as top positive signal | Create discussion-starting content |
+| Blocks/reports are strongly negative | Avoid controversial content that triggers blocks |
 | Author diversity penalty | Space posts, use threads |
 | OON penalty | Build quality followers first |
 | Video needs min duration | Make videos 10+ seconds |

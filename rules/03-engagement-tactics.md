@@ -181,7 +181,7 @@ Post → Immediate engagement → Algorithm sees signal → More distribution
 
 ### The Block/Mute Danger Zone
 
-Remember: One block = -10× a like. Avoid:
+Remember: a block carries strong negative weight and is hard to undo. Avoid:
 
 ```
 ❌ Unsolicited DMs

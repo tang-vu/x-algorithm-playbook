@@ -30,17 +30,25 @@
 
 ### Q: Which action matters most?
 
-**A:** Based on code analysis, **Reply** has the highest positive weight (~2× other actions), followed by Quote Tweet and Follow.
+**A:** **Reply** is widely treated as the highest-value positive signal, followed by Quote and Follow. Note the exact multipliers are **not public** (see below) — this ordering is the established intuition, not a number read from the code.
 
-**Source:** `weighted_scorer.rs`
+**Source:** `home-mixer/scorers/weighted_scorer.rs` (structure) — weight values redacted
 
 ---
 
 ### Q: How bad is getting blocked?
 
-**A:** Very bad. Block appears to have approximately -10× the weight of a like. One block can undo the positive signal from 10 likes.
+**A:** Bad. Block carries a **negative** weight that subtracts from your score, and the scorer offsets negative-dominant scores downward — so blocks are costly. The popular "−10× a like" figure is an **estimate**, not a code value; the real multiplier is redacted.
 
-**Source:** `weighted_scorer.rs` - `BLOCK_AUTHOR_WEIGHT`
+**Source:** `weighted_scorer.rs` references `BLOCK_AUTHOR_WEIGHT`, but the value lives in the unpublished `params` module
+
+---
+
+### Q: Are the exact action weights public?
+
+**A:** **No.** The May 2026 release publishes the scoring *structure* — `weighted_scorer.rs` sums 19 weighted action probabilities, names every weight constant, and shows the offset/normalization logic. But the weight *values* (`REPLY_WEIGHT`, `BLOCK_AUTHOR_WEIGHT`, `MIN_VIDEO_DURATION_MS`, …) sit in a `params` module that is **not in the repo** (`home-mixer/lib.rs` declares 13 modules; `params` isn't one, and there's no `params.rs`). So any precise multiplier you see quoted is an inference, not source-of-truth.
+
+**Source:** `home-mixer/lib.rs`, `home-mixer/scorers/weighted_scorer.rs`
 
 ---
 
@@ -209,7 +217,7 @@ Post 3: ~59% score
 
 ### Myth: Likes are the most important metric
 
-**Fact:** Replies have ~2× the weight of likes in the scoring formula.
+**Fact:** Reply is the top-weighted positive signal — well above a like (exact multiplier redacted).
 
 ---
 

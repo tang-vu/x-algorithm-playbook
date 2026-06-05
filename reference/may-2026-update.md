@@ -94,7 +94,11 @@ No keyword or hashtag gives a ranking bump. Their only job now is helping `grox`
 
 ### 4. The fundamentals didn't change — they got confirmed
 
-Replies still rank highest, blocks/reports still devastate, author-diversity still penalizes rapid-fire posting, and in-network still beats out-of-network. Keep doing the [Golden Rules](../rules/00-golden-rules.md).
+`weighted_scorer.rs` confirms the scoring **structure**: 19 weighted action probabilities summed, replies/quotes/follows positive, not-interested/block/mute/report negative, video gated by a minimum duration, then an offset/normalization. Keep doing the [Golden Rules](../rules/00-golden-rules.md).
+
+### 5. The exact weights are STILL redacted
+
+Even with a runnable model and full pipeline open-sourced, the **weight *values*** (`REPLY_WEIGHT`, `BLOCK_AUTHOR_WEIGHT`, `MIN_VIDEO_DURATION_MS`, …) are **not published** — they live in a `params` module absent from the repo (`home-mixer/lib.rs` declares 13 modules; `params` isn't one). So any precise multiplier ("reply = 2×", "one reply = 150 likes", "block = −10×") is an **inference, not a source value.** This playbook now labels every such number as an estimate. What you *can* trust: the set of weighted actions, their signs, the video-duration gate, and the relative priority order.
 
 ---
 

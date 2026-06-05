@@ -29,8 +29,8 @@ title: X Algorithm Playbook
 ```
 Your Post Score = Σ (weight × P(action))
 
-POSITIVE: reply (+2×), like, retweet, quote, share, follow
-NEGATIVE: block (-10×), mute, report (-20×), "not interested"
+POSITIVE: reply (highest), quote, follow, retweet, like, share
+NEGATIVE: report (most severe), block, mute, "not interested"
 ```
 
 **Key insight:** The algorithm predicts 19 different user actions and weights them. Maximize positive, avoid negative.
@@ -52,8 +52,8 @@ NEGATIVE: block (-10×), mute, report (-20×), "not interested"
 
 ## The 10 Golden Rules
 
-1. **Replies are king** — Posts that generate replies score ~2× higher
-2. **Avoid negative actions** — One block = -10× the value of a like
+1. **Replies are king** — Reply is the top-weighted positive signal
+2. **Avoid negative actions** — Blocks/reports carry strong negative weight
 3. **Space your posts** — Author diversity penalty kicks in after 1st post
 4. **In-network first** — Your followers see you before non-followers
 5. **Video > Image > Text** — But only if video exceeds minimum duration
@@ -69,14 +69,16 @@ NEGATIVE: block (-10×), mute, report (-20×), "not interested"
 
 ## Action Weights
 
-| Action | Weight | Impact |
-|--------|--------|--------|
-| Reply | ~2× | Highest positive |
-| Quote Tweet | ~1.5× | Strong |
-| Retweet | ~1× | Good |
-| Like | ~1× | Baseline |
-| Block | ~-10× | Very negative |
-| Report | ~-20× | Devastating |
+| Action | Relative (est.) | Impact |
+|--------|-----------------|--------|
+| Reply | Highest | Top positive |
+| Quote Tweet | High | Strong |
+| Retweet | Medium | Good |
+| Like | Medium | Baseline |
+| Block | Negative | Very negative |
+| Report | Negative | Most severe |
+
+> Exact weight values are **redacted** from the source — these are relative estimates. [Why →](reference/action-weights.md#the-exact-weight-values-are-redacted)
 
 [Full reference →](reference/action-weights.md)
 

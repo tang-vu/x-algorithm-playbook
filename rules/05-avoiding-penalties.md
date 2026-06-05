@@ -6,16 +6,18 @@
 
 ## The Negative Action Weights
 
-These actions SUBTRACT from your score:
+These actions carry **negative** weight and SUBTRACT from your score.
 
-| Action | Approximate Weight | Impact |
-|--------|-------------------|--------|
-| Report | -20× a like | Devastating |
-| Block | -10× a like | Very severe |
-| Mute | -5× a like | Severe |
-| "Not Interested" | -1× a like | Moderate |
+> ⚠️ The numbers below are **illustrative estimates, not code values** — the actual weight constants are redacted from the open-source repo ([details](../reference/action-weights.md#the-exact-weight-values-are-redacted)). What's verified: all four are negative, and the scorer offsets negative-dominant scores downward.
 
-**Reality check:** One block undoes the positive signal from 10 likes.
+| Action | Illustrative (not from code) | Impact |
+|--------|------------------------------|--------|
+| Report | ≈ -20× a like | Most severe |
+| Block | ≈ -10× a like | Very severe |
+| Mute | ≈ -5× a like | Severe |
+| "Not Interested" | ≈ -1× a like | Moderate |
+
+**Reality check:** even if the exact ratio is unknown, a handful of blocks/reports can wipe out the positive signal from many likes — so they're worth avoiding hard.
 
 ---
 

@@ -16,6 +16,42 @@ Final Score = Σ (weight_i × P(action_i))
 
 ---
 
+## The Exact Weight Values Are Redacted
+
+**Verified against `home-mixer/scorers/weighted_scorer.rs` (May 2026 release).** This is the most important thing to understand about "weights":
+
+- The code multiplies each predicted probability by a per-action weight (`p::FAVORITE_WEIGHT`, `p::REPLY_WEIGHT`, `p::BLOCK_AUTHOR_WEIGHT`, …) and sums them.
+- **Those weight *values* are NOT in the open-source repo.** They live in a `params` module that is **not published** — `home-mixer/lib.rs` declares 13 modules and `params` is not one of them; there is no `params.rs` and no build script. The code references the constants; the numbers are stripped.
+
+**What this means:** every specific multiplier in this playbook (e.g. "reply ~2×", "block −10×", "report −20×") is an **illustrative estimate / relative ordering — NOT a value extracted from the code.** Treat them as direction, not as ground truth. Anyone claiming a precise ratio (e.g. "one reply = 150 likes") is inferring, not quoting the source.
+
+### What the source DOES verify
+
+```rust
+// weighted_scorer.rs — compute_weighted_score() sums exactly 19 terms:
+combined =  favorite·FAVORITE_W  + reply·REPLY_W       + retweet·RETWEET_W
+          + photo_expand·…       + click·…             + profile_click·…
+          + vqv·vqv_weight       + share·…             + share_via_dm·…
+          + share_via_copy_link·… + dwell·…            + quote·QUOTE_W
+          + quoted_click·…       + dwell_time·CONT_DWELL_TIME_W   // continuous
+          + follow_author·…
+          + not_interested·NOT_INTERESTED_W            // negative
+          + block_author·BLOCK_AUTHOR_W                // negative
+          + mute_author·MUTE_AUTHOR_W                  // negative
+          + report·REPORT_W;                           // negative
+
+// apply(score, weight) = score.unwrap_or(0.0) * weight  → missing predictions count as 0
+```
+
+Verified facts (no numbers needed):
+
+- **19 weighted terms**, with `favorite, reply, retweet, quote, share, share_via_dm, share_via_copy_link, click, quoted_click, profile_click, vqv, photo_expand, dwell, dwell_time, follow_author` positive and **`not_interested, block_author, mute_author, report` negative**.
+- **Video (`vqv`) only gets weight if `video_duration_ms > MIN_VIDEO_DURATION_MS`** — otherwise its weight is `0.0`. (The duration threshold value is also redacted.)
+- **`dwell_time` is continuous** (uses `CONT_DWELL_TIME_WEIGHT`), separate from the binary `dwell`.
+- After summing, an **offset/normalization** is applied (`offset_score()` + `normalize_score()`): negative-dominant scores are rescaled via `NEGATIVE_WEIGHTS_SUM / WEIGHTS_SUM` and shifted by `NEGATIVE_SCORES_OFFSET`, so the final score stays well-behaved.
+
+---
+
 ## Positive Actions
 
 Actions that INCREASE your post's score:
@@ -40,10 +76,10 @@ Actions that INCREASE your post's score:
 
 ### Notes on Positive Actions
 
-- **Reply** and **Quote Tweet** have the highest weights (~2× others)
+- **Reply** and **Quote Tweet** are widely treated as the highest-value positive signals (the "~2×" is an estimate, not a code value)
 - **Follow Author** is high-intent signal (user wants more)
-- **Video Quality View** only counts if video exceeds minimum duration
-- **Dwell Time** is continuous (more time = more signal)
+- **Video Quality View** only counts if video exceeds minimum duration — **verified** (`vqv_weight = 0` below `MIN_VIDEO_DURATION_MS`)
+- **Dwell Time** is continuous (`CONT_DWELL_TIME_WEIGHT`) — **verified**
 
 ---
 
@@ -58,18 +94,18 @@ Actions that DECREASE your post's score:
 | 18 | **Block Author** | `block_author` | User blocks you | ❌❌❌ Very Strong |
 | 19 | **Report** | `report` | User reports post | ❌❌❌❌ Devastating |
 
-### Estimated Negative Weights
+### Negative Weights — Illustrative Only
 
-Based on code analysis:
+> ⚠️ **These numbers are NOT from the code** (the values are redacted — see above). They're a widely-cited *relative* intuition for teaching purposes. What the source guarantees is only that these four actions carry **negative** weight and that report/block are treated as the most severe.
 
-| Action | Estimated Impact |
-|--------|------------------|
-| Not Interested | -1× a like |
-| Mute | -5× a like |
-| Block | -10× a like |
-| Report | -20× a like |
+| Action | Illustrative relative impact | Verified from source? |
+|--------|------------------------------|-----------------------|
+| Not Interested | ≈ −1× a like | Sign only (negative) |
+| Mute | ≈ −5× a like | Sign only (negative) |
+| Block | ≈ −10× a like | Sign only (negative) |
+| Report | ≈ −20× a like | Sign only (negative) |
 
-**Key insight:** One block undoes 10 likes. One report undoes 20 likes.
+**Takeaway (safe to rely on):** negative actions actively subtract from your score, and the algorithm separates positive and negative sums with an offset — so a few blocks/reports can erase a lot of positive signal. The *exact* ratio is unknown.
 
 ---
 
@@ -139,10 +175,10 @@ Both are weighted and contribute to score.
 
 | Component | Where |
 |-----------|-------|
-| Weight application (Weighted Scorer) | `home-mixer/scorers/` |
-| Score extraction (Phoenix Scorer) | `home-mixer/scorers/` |
+| Weight application (19-term sum + offset) | `home-mixer/scorers/weighted_scorer.rs` |
+| Score extraction (Phoenix Scorer) | `home-mixer/scorers/phoenix_scorer.rs` |
 | 19 action heads | `phoenix/` model config |
-| Predicted-action definitions | `xai_recsys_proto` |
+| **Weight VALUES (`*_WEIGHT` constants)** | **`params` module — redacted / not published** |
 
 ---
 
@@ -176,11 +212,11 @@ MAXIMIZE:
 ├── Like (⭐⭐)
 └── Video View (⭐⭐) [if > min duration]
 
-MINIMIZE:
-├── Report (❌❌❌❌ -20×)
-├── Block (❌❌❌ -10×)
-├── Mute (❌❌ -5×)
-└── Not Interested (❌ -1×)
+MINIMIZE (severity order — exact weights redacted):
+├── Report (❌❌❌❌ most severe)
+├── Block (❌❌❌)
+├── Mute (❌❌)
+└── Not Interested (❌)
 ```
 
 ---

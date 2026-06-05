@@ -6,7 +6,7 @@
 
 ## Rule 1: Replies Are King 👑
 
-**Why:** Reply probability has the highest positive weight (~2×) in the scoring formula.
+**Why:** Reply is treated as the highest-value positive signal in the scoring formula. (The exact multiplier is **redacted** — the "~2×" quoted around the web is an estimate, not a value from the code.)
 
 **Do:**
 - End posts with questions
@@ -24,10 +24,7 @@
 
 ## Rule 2: Avoid Negative Actions At All Costs ⚠️
 
-**Why:** Negative actions have MASSIVE penalties:
-- Block = -10× the value of a like
-- Report = -20× the value of a like
-- Mute = -5× the value of a like
+**Why:** Negative actions carry strong **negative** weight and actively subtract from your score — the scorer sums negative signals separately and offsets your score downward (verified). The commonly-assumed severity order is **report > block > mute > not-interested**; the exact multipliers are redacted, but a few of these can erase a lot of positive signal.
 
 **Do:**
 - Stay in your niche

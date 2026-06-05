@@ -117,7 +117,7 @@ The algorithm predicts engagement probability. A weak hook = low P(dwell), P(rep
 
 Posts without engagement invitation = lower P(reply), P(quote).
 
-Reply has ~2× the weight of a like.
+Reply is the top-weighted positive signal (well above a like).
 
 ### Real Example
 
@@ -354,7 +354,7 @@ Post at 9 AM:
 | Mistake | Algorithm Impact | Fix |
 |---------|------------------|-----|
 | Post too frequently | Diversity penalty | Space 3-4+ hours |
-| Trigger blocks | -10× per block | Stay authentic |
+| Trigger blocks | Strong negative weight | Stay authentic |
 | Weak hooks | Low engagement prediction | Lead with value |
 | No engagement hook | Low P(reply) | End with question |
 | Buy followers | Low engagement rate | Grow organically |

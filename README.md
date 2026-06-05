@@ -35,8 +35,8 @@ X (formerly Twitter) open-sourced their recommendation algorithm, and xAI [shipp
 Your Post Score = Σ (weight × P(action))
 
 Where actions include:
-├── POSITIVE: reply (+2×), like, retweet, quote, share, follow
-├── NEGATIVE: block (-10×), mute, report (-20×), "not interested"
+├── POSITIVE: reply (highest), quote, follow, retweet, like, share
+├── NEGATIVE: report (most severe), block, mute, "not interested"
 └── NEUTRAL: click, dwell time, profile view
 ```
 
@@ -77,8 +77,8 @@ x-algorithm-playbook/
 
 ## The Golden Rules (TL;DR)
 
-1. **Replies are king** — Posts that generate replies score ~2× higher
-2. **Avoid negative actions** — One block = -10× the value of a like
+1. **Replies are king** — Reply is the top-weighted positive signal
+2. **Avoid negative actions** — Blocks/reports carry strong negative weight
 3. **Space your posts** — Author diversity penalty kicks in after 1st post
 4. **In-network first** — Your followers see you before non-followers
 5. **Video > Image > Text** — But only if video exceeds minimum duration
@@ -141,20 +141,22 @@ The algorithm uses a **Grok-based transformer model** (Phoenix) to predict engag
 
 ## Action Weights (Simplified)
 
-| Action | Weight | Impact |
-|--------|--------|--------|
-| Reply | ~2× | Highest positive signal |
-| Quote Tweet | ~1.5× | Strong engagement |
-| Retweet | ~1× | Good reach |
-| Like | ~1× | Baseline positive |
-| Follow Author | ~1× | High intent signal |
-| Share (DM/Link) | ~0.5× | Moderate |
-| Click | ~0.3× | Weak positive |
-| Dwell Time | Variable | Longer = better |
-| "Not Interested" | ~-1× | Negative signal |
-| Mute | ~-5× | Strong negative |
-| Block | ~-10× | Very strong negative |
-| Report | ~-20× | Devastating |
+> The algorithm sums 19 weighted action probabilities, but the **exact weight values are redacted** (not in the open-source repo). The column below is **relative intuition, not code values** — see [why →](reference/action-weights.md#the-exact-weight-values-are-redacted).
+
+| Action | Relative (est.) | Impact |
+|--------|-----------------|--------|
+| Reply | Highest | Top positive signal |
+| Quote Tweet | High | Strong engagement |
+| Follow Author | High | High intent signal |
+| Retweet | Medium | Good reach |
+| Like | Medium | Baseline positive |
+| Share (DM/Link) | Low–Med | Moderate |
+| Click | Low | Weak positive |
+| Dwell Time | Variable | Longer = better (continuous) |
+| "Not Interested" | Negative | Negative signal |
+| Mute | Negative | Strong negative |
+| Block | Negative | Very strong negative |
+| Report | Negative | Most severe |
 
 [Full action reference →](reference/action-weights.md)
 
