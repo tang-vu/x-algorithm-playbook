@@ -42,15 +42,15 @@
 
 ## Rule 3: Space Your Posts (Author Diversity Penalty) ⏰
 
-**Why:** The algorithm applies exponential decay to multiple posts from the same author:
-- 1st post: 100% score
-- 2nd post: ~76% score
-- 3rd post: ~59% score
-- Eventually floors at ~20%
+**Why:** Within a single feed response, the algorithm decays your extra posts from the same author by score-rank, toward a floor (verified formula: `(1−floor)×decay^position + floor`):
+- Your top post: 100%
+- next: ~76% · next: ~59% · …→ ~20% floor
+
+> Numbers are illustrative (assume decay≈0.7, floor≈0.2) — the real `decay`/`floor` are redacted from the source.
 
 **Do:**
-- Post 3-4 hours apart
-- Use threads instead of separate posts (counts as one "author slot")
+- Post 3-4 hours apart (fewer of your posts compete in the same response)
+- Use threads instead of separate posts (one published post = one author-position)
 - Quality over quantity
 
 **Don't:**
@@ -63,7 +63,7 @@
 
 ## Rule 4: In-Network First 🏠
 
-**Why:** Out-of-network content is multiplied by `OON_WEIGHT_FACTOR` (less than 1.0). Your followers see you first.
+**Why:** Out-of-network content is multiplied by `OON_WEIGHT_FACTOR` (a penalty factor; exact value redacted, understood < 1.0). Your followers see you first.
 
 **Do:**
 - Focus on building genuine followers

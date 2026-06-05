@@ -189,16 +189,16 @@ Vague post → noisy embedding → matched to no one in particular
 
 ## Content Calendar Strategy
 
-Based on Author Diversity Penalty:
+Based on the Author Diversity Penalty (per-response decay by score-rank; example impacts below are illustrative, since the real decay/floor are [redacted](../reference/action-weights.md#the-exact-weight-values-are-redacted)):
 
-| Frequency | Score Impact | Recommendation |
-|-----------|--------------|----------------|
-| 1 post/day | 100% score | Safe, sustainable |
-| 2 posts/day | ~76% on 2nd | Space 6+ hours apart |
-| 3 posts/day | ~59% on 3rd | Consider threading instead |
+| Frequency | Score Impact (illustrative) | Recommendation |
+|-----------|-----------------------------|----------------|
+| 1 post/day | ~100% | Safe, sustainable |
+| 2 posts/day | ~76% on the lower-scored one | Space 6+ hours apart |
+| 3 posts/day | ~59% on the 3rd | Consider threading instead |
 | 4+ posts/day | Diminishing returns | Quality suffers |
 
-**Pro tip:** Use threads to pack more content into one "author slot."
+**Pro tip:** A thread is one published post — one author-position instead of many.
 
 ---
 

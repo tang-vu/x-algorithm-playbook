@@ -6,25 +6,26 @@
 
 ## The Author Diversity Penalty
 
-The most important timing factor in the algorithm.
+A key reason not to flood the feed — though it works differently than most people think.
 
-### How It Works
+### How It Works (verified from `author_diversity_scorer.rs`)
 
-When multiple posts from the same author appear in one feed session:
+It is a **per-response** de-duplication, not a clock timer. Within a single For You response, your posts are sorted by score; each additional post **from the same author** gets a decayed multiplier based on its rank (position 0 = your top post, full weight):
 
 ```
-Post #1: 100% of calculated score
-Post #2: ~76% of calculated score
-Post #3: ~59% of calculated score
-Post #4: ~47% of calculated score
-...
-Post #N: Converges to ~20% floor
+multiplier = (1 - floor) × decay^position + floor      // verified formula
 ```
 
-**Formula:**
+- Your **highest-scored** post keeps full weight; your 2nd, 3rd… decay toward a `floor` (so an author is attenuated, **never removed to zero**, by this scorer).
+- `position` is rank **by score** among your posts in that response — not chronological.
+
+**Illustrative example** (assumes `decay ≈ 0.7`, `floor ≈ 0.2` — the **real values are redacted**, in the unpublished `params` module):
+
 ```
-multiplier = (1 - floor) × decay^position + floor
+Post #1: 100%   Post #2: ~76%   Post #3: ~59%   Post #4: ~47%   …→ ~20% floor
 ```
+
+> ⚠️ Those percentages are an **example**, not code values (`AUTHOR_DIVERSITY_DECAY` / `AUTHOR_DIVERSITY_FLOOR` are not published). What's verified is the formula shape and that it decays toward a floor.
 
 ### What This Means
 
@@ -62,17 +63,20 @@ Ideal spacing: 6+ hours
 
 ### Thread Strategy
 
-Threads are the exception to frequency limits:
+Threads are a smart way to ship more content without multiplying your author-positions:
 
 ```
-Thread = 1 "author slot" regardless of length
+A thread is ONE post you publish → one author-position,
+not N separate posts competing in the same response.
 
 Benefits:
 ├── High dwell time (people read through)
-├── No diversity penalty for thread tweets
+├── One author-position instead of N (less diversity decay)
 ├── Multiple engagement points
 └── Easy to bookmark/save
 ```
+
+> Note: this is about *how many separate posts you publish*, not a special rule for threads inside the scorer — the diversity scorer only sees `author_id`, not thread structure.
 
 ---
 

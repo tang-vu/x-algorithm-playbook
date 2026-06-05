@@ -119,11 +119,11 @@ Use relevant hashtags sparingly.
 ### Q: Are threads better than single tweets?
 
 **A:** Threads have advantages:
-1. Count as ONE "author slot" (no diversity penalty within thread)
+1. One published post = one author-position (vs N separate posts each taking a position in the diversity decay)
 2. Higher dwell time (people read multiple tweets)
 3. More engagement opportunities per thread
 
-**Source:** Author diversity logic in `author_diversity_scorer.rs`
+**Note:** the author-diversity scorer only groups by `author_id` — it has **no special thread logic**. The benefit comes from publishing one post instead of many, not from a thread exemption in the code.
 
 ---
 
@@ -184,24 +184,22 @@ Use relevant hashtags sparingly.
 
 ### Q: How does the author diversity penalty work?
 
-**A:** When multiple posts from the same author appear:
+**A:** Within one feed response, your posts are sorted by score, and each extra post from the same author is attenuated by its rank — decaying toward a floor (never to zero):
 
 ```
-Post 1: 100% score
-Post 2: ~76% score  
-Post 3: ~59% score
-...converges to ~20% floor
+Post 1: 100%   Post 2: ~76%   Post 3: ~59%   …→ ~20% floor
+(illustrative — assumes decay≈0.7, floor≈0.2)
 ```
 
-**Formula:** `multiplier = (1 - floor) × decay^position + floor`
+**Formula (verified):** `multiplier = (1 - floor) × decay^position + floor`
 
-**Source:** `author_diversity_scorer.rs`
+**Source:** `author_diversity_scorer.rs` — formula is real; `decay`/`floor` values are in the redacted `params` module, so the percentages above are an example, not code values.
 
 ---
 
 ### Q: What is OON penalty?
 
-**A:** Out-of-network (OON) content (from accounts you don't follow) is multiplied by `OON_WEIGHT_FACTOR` (less than 1.0). This gives in-network content an advantage.
+**A:** Out-of-network (OON) content (from accounts you don't follow) is multiplied by `OON_WEIGHT_FACTOR` when `in_network == false` (verified in `oon_scorer.rs`). It's understood to be a penalty (<1), but the **exact value is redacted** (`params` module). Net effect: in-network content has an advantage.
 
 **Source:** `oon_scorer.rs`
 

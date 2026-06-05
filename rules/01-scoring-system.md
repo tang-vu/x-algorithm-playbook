@@ -192,28 +192,28 @@ combined_score =
 
 ### Step 2: Author Diversity Scorer
 
-Penalizes multiple posts from same author in one feed:
+Within a **single feed response**, sorts your posts by score and attenuates each extra post **from the same author** by its score-rank (`position`). Decays toward a `floor` — never to zero.
 
 ```rust
-// From author_diversity_scorer.rs
-multiplier = (1 - floor) × decay^position + floor
+// author_diversity_scorer.rs (verified formula; decay & floor are REDACTED)
+multiplier(position) = (1 - floor) × decay^position + floor
+// position 0 = your highest-scored post → full weight
 
-// Example with decay=0.8, floor=0.2:
-// Post 1: 1.0 (100%)
-// Post 2: 0.84 (84%)
-// Post 3: 0.67 (67%)
-// Post 4: 0.54 (54%)
-// ...converges to 0.2 (20%)
+// Illustrative only (assumes decay≈0.7, floor≈0.2 — not code values):
+// Post 1: 100%   Post 2: ~76%   Post 3: ~59%   Post 4: ~47%   …→ ~20% floor
 ```
+
+> `AUTHOR_DIVERSITY_DECAY` / `AUTHOR_DIVERSITY_FLOOR` live in the unpublished `params` module — the curve shape is real, the exact numbers are not.
 
 ### Step 3: OON Scorer
 
 Penalizes out-of-network content:
 
 ```rust
-// From oon_scorer.rs
-if !in_network {
-    score *= OON_WEIGHT_FACTOR  // Less than 1.0
+// oon_scorer.rs (actual): out-of-network candidates are down-weighted
+match in_network {
+    Some(false) => score * OON_WEIGHT_FACTOR,  // value REDACTED (params); understood < 1.0
+    _ => score,
 }
 ```
 

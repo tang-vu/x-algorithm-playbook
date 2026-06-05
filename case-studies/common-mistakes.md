@@ -9,11 +9,9 @@
 ### The Problem
 
 ```
-Author Diversity Penalty:
-Post 1: 100% score
-Post 2: ~76% score
-Post 3: ~59% score
-Post 4: ~47% score
+Author Diversity Penalty (per-response, by score-rank):
+Your top post: 100%   →  ~76%  →  ~59%  →  ~47%  …→ ~20% floor
+(percentages illustrative — real decay/floor are redacted)
 ```
 
 ### Real Example
@@ -25,7 +23,7 @@ Post 4: ~47% score
 9:30 AM - Tweet about topic C
 9:45 AM - Tweet about topic D
 
-Result: Each post scores lower than the last
+Result: your posts compete in the same feeds and your lower-scored ones get decayed
 ```
 
 **Better approach:**

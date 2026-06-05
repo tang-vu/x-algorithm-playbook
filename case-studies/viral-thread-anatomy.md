@@ -10,7 +10,7 @@ From the algorithm's perspective, threads are powerful because:
 
 | Factor | Algorithm Impact |
 |--------|------------------|
-| Single author slot | No diversity penalty for tweets within thread |
+| One published post | A thread is one author-position, not N competing posts |
 | High dwell time | User reads multiple tweets = strong signal |
 | Multiple engagement points | More opportunities for likes/replies |
 | Shareability | Easy to quote/retweet the thread |
