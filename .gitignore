@@ -1,4 +1,4 @@
-# Dependencies
+﻿# Dependencies
 node_modules/
 .pnpm-store/
 .claude
@@ -26,3 +26,6 @@ Thumbs.db
 # Temp
 *.tmp
 *.temp
+
+# AI assistant artifacts
+.devin/
