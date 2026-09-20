@@ -31,7 +31,7 @@ X (formerly Twitter) open-sourced their recommendation algorithm, and xAI [ships
 
 ## The Algorithm in 60 Seconds
 
-```
+```text
 Your Post Score = Σ (weight × P(action))
 
 Where actions include (real weights):
@@ -49,7 +49,7 @@ Where actions include (real weights):
 
 ## Repository Structure
 
-```
+```text
 x-algorithm-playbook/
 ├── rules/                  # Core strategies (start here)
 │   ├── 00-golden-rules.md      ← The 10 most important rules
@@ -100,7 +100,7 @@ x-algorithm-playbook/
 
 The algorithm uses a **Grok-based transformer model** (Phoenix) to predict engagement:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                    YOUR POST ENTERS THE SYSTEM                   │
 └─────────────────────────────────────────────────────────────────┘

@@ -12,7 +12,7 @@ A key reason not to flood the feed — though it works differently than most peo
 
 It is a **per-response** de-duplication, not a clock timer. Within a single For You response, your posts are sorted by score; each additional post **from the same author** gets a decayed multiplier based on its rank (position 0 = your top post, full weight):
 
-```
+```text
 multiplier = (1 - 0.25) × 0.5^position + 0.25      // decay=0.5, floor=0.25 — REAL values
 ```
 
@@ -21,7 +21,7 @@ multiplier = (1 - 0.25) × 0.5^position + 0.25      // decay=0.5, floor=0.25 —
 
 **Real values** (`AuthorDiversityDecay=0.5`, `AuthorDiversityFloor=0.25`):
 
-```
+```text
 Post #1: 100%   Post #2: 62.5%   Post #3: 43.75%   Post #4: 34.4%   …→ 25% floor
 ```
 
@@ -53,7 +53,7 @@ The decay is *steeper* than previously assumed — your second post loses over a
 
 If posting multiple times per day:
 
-```
+```text
 ❌ Bad: 3 posts within 1 hour
 ✅ Good: Post at 9am, 2pm, 7pm
 
@@ -65,7 +65,7 @@ Ideal spacing: 6+ hours
 
 Threads are a smart way to ship more content without multiplying your author-positions:
 
-```
+```text
 A thread is ONE post you publish → one author-position,
 not N separate posts competing in the same response.
 
@@ -96,7 +96,7 @@ Posts older than a threshold are filtered out entirely — **verified: 48 hours*
 
 The most critical window for any post:
 
-```
+```text
 0-15 min: Initial distribution to followers
 15-60 min: Algorithm measures engagement
 1+ hour: Decision point for wider distribution
@@ -121,7 +121,7 @@ The most critical window for any post:
 
 Your audience may differ. Check:
 
-```
+```text
 1. X Analytics → Posts → Best times
 2. Experiment with different times
 3. Track engagement rates by post time
@@ -156,7 +156,7 @@ Your audience may differ. Check:
 
 Taking breaks is fine:
 
-```
+```text
 ✅ Consistency matters more than daily posting
 ✅ Quality doesn't require 7 days/week
 ✅ Occasional breaks don't hurt algorithmic standing
@@ -169,7 +169,7 @@ Taking breaks is fine:
 
 ### The Algorithm Learns Your Pattern
 
-```
+```text
 Consistent posting → Algorithm learns when to check for your content
 Erratic posting → Less predictable distribution
 

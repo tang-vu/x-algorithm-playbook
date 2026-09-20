@@ -22,7 +22,7 @@ From the algorithm's perspective, threads are powerful because:
 
 ### The Proven Formula
 
-```
+```text
 Tweet 1: HOOK
 ├── Stop the scroll
 ├── Promise value
@@ -48,7 +48,7 @@ Tweet 10: CLOSE
 
 ### Template
 
-```
+```text
 Tweet 1 (Hook):
 "I [did X thing] for [time period].
 
@@ -92,7 +92,7 @@ What would you add?"
 
 ### Template
 
-```
+```text
 Tweet 1 (Hook):
 "Unpopular opinion: [bold contrarian statement]
 
@@ -133,7 +133,7 @@ Agree or disagree? Let me know below 👇"
 
 ### Template
 
-```
+```text
 Tweet 1 (Hook):
 "I spent [time] compiling [number] [resources] for [audience].
 
@@ -197,7 +197,7 @@ Follow for more [niche] content."
 
 ### When to Post Threads
 
-```
+```text
 Best days: Tuesday - Thursday
 Best times: Morning or evening peak hours
 
@@ -208,7 +208,7 @@ Why: More time for engagement to build
 
 ### First Hour Strategy
 
-```
+```text
 0-15 min: Post thread
 15-30 min: Reply to every comment
 30-60 min: Continue engaging
@@ -225,7 +225,7 @@ The first hour determines if thread takes off.
 
 Add value after posting:
 
-```
+```text
 "One more thing I forgot to mention..."
 "Someone asked about X. Here's the answer..."
 "Here's an example of #3 in action..."
@@ -233,7 +233,7 @@ Add value after posting:
 
 ### Quote Tweet Your Own Thread
 
-```
+```text
 Next day: "This thread is still getting traction. 
 
 Here's the most underrated insight from it:"
@@ -243,7 +243,7 @@ Here's the most underrated insight from it:"
 
 ### Repurpose Threads
 
-```
+```text
 Thread → Blog post
 Thread → Newsletter
 Thread → Video script

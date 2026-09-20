@@ -8,7 +8,7 @@
 
 Based on the **real published weights** (`params/param.rs`), prioritize content that generates:
 
-```
+```text
 1. 🔗 Copy-link shares  (20.0 — the single biggest weight)
 2. 💬 Replies           (5.0 — and 20.0 on mutual-follow original posts)
 2. 📩 DM shares          (5.0)
@@ -94,7 +94,7 @@ The first line determines if people stop scrolling.
 
 ### For Dwell Time
 
-```
+```text
 ✅ DO:
 • Use line breaks (spacing helps readability)
 • Use bullet points
@@ -110,7 +110,7 @@ The first line determines if people stop scrolling.
 
 ### For Engagement
 
-```
+```text
 ✅ DO:
 • End with question or CTA
 • Tag relevant people (sparingly)
@@ -178,7 +178,7 @@ The first line determines if people stop scrolling.
 
 **Why it pays off:**
 
-```
+```text
 Clear post → clean embedding + clean SID → matches the RIGHT audience
              → eligible for Phoenix retrieval + SimClusters + topic surfaces
              → higher P(reply/share) because it reached people who care

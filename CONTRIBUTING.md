@@ -5,10 +5,12 @@ Thanks for your interest in contributing! This playbook is community-driven and 
 ## How to Contribute
 
 ### Reporting Issues
+
 - Found an outdated rule? Algorithm changed? Open an issue.
 - Include sources if possible (algorithm code references, official announcements).
 
 ### Suggesting Improvements
+
 - Open an issue first to discuss significant changes
 - For typos or small fixes, PRs are welcome directly
 

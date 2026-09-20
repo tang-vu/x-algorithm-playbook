@@ -8,7 +8,7 @@
 
 Filtering happens in **two separate systems**, and they answer different questions:
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────┐
 │ LAYER 1 — home-mixer filters (home-mixer/filters/)                │
 │ "Is this post eligible for THIS feed THIS time?"                  │
@@ -73,7 +73,7 @@ After ranking fixes the order:
 
 `visibility-filtering/` returns one of three verdicts per (post, viewer) pair:
 
-```
+```text
 ALLOW          → show normally
 INTERSTITIAL   → show behind a tap-through warning (adult/graphic media)
 DROP           → do not show
@@ -144,7 +144,7 @@ xAI now ships a transparency tool — **Under the Hood** — that shows aggregat
 
 ## Filter Avoidance Checklist
 
-```
+```text
 □ No spam/bait keywords (MutedKeywordFilter, SpamTweetLabelRule)
 □ Nothing that earns blocks/mutes (AuthorSocialgraph, ViewerBlocks/Mutes)
 □ Media is clean — no borderline NSFW/gore (interstitials + OON drops)

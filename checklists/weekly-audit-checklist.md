@@ -138,6 +138,7 @@ Target: 80% engaging / 20% posting
 ### Improvements
 
 Based on this week's audit, I will:
+
 1. Do more of: ___
 2. Do less of: ___
 3. Try new: ___
@@ -146,7 +147,7 @@ Based on this week's audit, I will:
 
 ## Quick Weekly Audit (5 min version)
 
-```
+```text
 □ Reviewed top 3 performers - identified why
 □ Reviewed bottom 3 performers - identified why
 □ Engagement rate trending positively?

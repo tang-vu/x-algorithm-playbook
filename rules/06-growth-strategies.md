@@ -10,7 +10,7 @@ Understanding how the algorithm finds you new followers:
 
 ### In-Network (Followers)
 
-```
+```text
 Your post → Directly to followers' For You feeds
 Advantage: No OON penalty, direct delivery
 Strategy: Keep them engaged, avoid unfollows
@@ -18,7 +18,7 @@ Strategy: Keep them engaged, avoid unfollows
 
 ### Out-of-Network (Discovery)
 
-```
+```text
 Your post → Phoenix Two-Tower Retrieval / SimClusters → Matched to similar users
 Challenge: verified ×0.75 discount (OonWeightFactor; ×0.5 on topic surfaces)
 Strategy: Strong engagement signals, clear niche
@@ -32,7 +32,7 @@ Strategy: Strong engagement signals, clear niche
 
 How the algorithm decides to show your content to non-followers:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                    TWO-TOWER RETRIEVAL                          │
 ├─────────────────────────────────────────────────────────────────┤
@@ -76,7 +76,7 @@ How the algorithm decides to show your content to non-followers:
 
 ### What changed strategically
 
-```
+```text
 OLD mental model:  "go viral in retrieval or stay invisible"
 NEW mental model:  several doors, each opened by TOPIC CLARITY + CONSISTENCY
   • Phoenix retrieval reads your post's semantic ID (embedding identity)
@@ -102,7 +102,7 @@ See [Scoring System → Where Candidates Come From](01-scoring-system.md#where-c
 
 ### Why Niching Down Works
 
-```
+```text
 Broad topics → Weak embedding signal → Poor matching
 Specific niche → Strong embedding signal → Better matching
 
@@ -124,7 +124,7 @@ Example:
 
 If you must cover multiple topics:
 
-```
+```text
 ✅ Related topics (SaaS + Pricing + Growth)
 ❌ Unrelated topics (SaaS + Cooking + Politics)
 
@@ -137,7 +137,7 @@ The algorithm will struggle to match unrelated content.
 
 ### Why Quality Matters
 
-```
+```text
 100 engaged followers > 10,000 inactive followers
 
 Because:
@@ -162,7 +162,7 @@ Because:
 
 Sustainable growth comes from compound engagement:
 
-```
+```text
 Great Content
     │
     ▼
@@ -198,7 +198,7 @@ More engagement on next post
 
 …then the single best eligible post can be **lifted straight to ~feed slot 15–16** (`ColdStartSlotMin=15/Max=16`, `EnableViewerColdStart=true`). Every original post while you're small is a boosted lottery ticket — the algorithm is literally looking for new voices to test.
 
-```
+```text
 1. Engage heavily with people in your niche
 2. Provide massive value in replies
 3. Build relationships with similar-sized accounts
@@ -222,7 +222,7 @@ More engagement on next post
 
 ### Example Content Mix
 
-```
+```text
 Monday: Educational thread
 Tuesday: Question (engagement)
 Wednesday: Personal story
@@ -240,7 +240,7 @@ Sunday: Educational thread
 
 From the algorithm's perspective, viral content has (real weights):
 
-```
+```text
 High P(copy_link_share ·20.0) + High P(reply ·5.0) + High P(quote ·5.0)
   + High P(DM share ·5.0) + High P(retweet ·1.0)
   + Low P(report ·−234 / mute ·−58.8 / not_interested ·−43.2 / block ·−31.2)
@@ -258,7 +258,7 @@ High P(copy_link_share ·20.0) + High P(reply ·5.0) + High P(quote ·5.0)
 
 ### Viral Cautions
 
-```
+```text
 ⚠️ Viral doesn't always mean good
 ⚠️ Controversial viral → blocks/mutes
 ⚠️ One viral post ≠ sustained growth
@@ -302,7 +302,7 @@ High P(copy_link_share ·20.0) + High P(reply ·5.0) + High P(quote ·5.0)
 
 ### 30-Day Challenge
 
-```
+```text
 Week 1: Establish posting consistency
 Week 2: Focus on engagement hooks
 Week 3: Build relationships with 10 peers

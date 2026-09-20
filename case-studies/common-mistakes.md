@@ -8,7 +8,7 @@
 
 ### The Problem
 
-```
+```text
 Author Diversity Penalty (per-response, by score-rank — REAL values):
 Your top post: 100%   →  62.5%  →  43.75%  →  34.4%  …→ 25% floor
 (decay=0.5, floor=0.25 — published in params/param.rs, Aug 2026)
@@ -17,7 +17,8 @@ Your top post: 100%   →  62.5%  →  43.75%  →  34.4%  …→ 25% floor
 ### Real Example
 
 **Bad approach:**
-```
+
+```text
 9:00 AM - Tweet about topic A
 9:15 AM - Tweet about topic B
 9:30 AM - Tweet about topic C
@@ -27,7 +28,8 @@ Result: your posts compete in the same feeds and your lower-scored ones get deca
 ```
 
 **Better approach:**
-```
+
+```text
 9:00 AM - Quality tweet
 3:00 PM - Quality tweet
 9:00 PM - Quality tweet
@@ -59,7 +61,8 @@ Real weights: report −234, mute −58.8, not-interested −43.2, block −31.2
 ### Real Example
 
 **Scenario:** You post controversial content for engagement
-```
+
+```text
 Result: 
 + 500 likes
 + 100 retweets
@@ -88,7 +91,8 @@ The algorithm predicts engagement probability. A weak hook = low P(dwell), P(rep
 ### Real Examples
 
 **❌ Weak hooks:**
-```
+
+```text
 "Just wanted to share some thoughts..."
 "New blog post!"
 "Thoughts on X?"
@@ -96,7 +100,8 @@ The algorithm predicts engagement probability. A weak hook = low P(dwell), P(rep
 ```
 
 **✅ Strong hooks:**
-```
+
+```text
 "I made $100K from one tweet. Here's exactly how:"
 "Unpopular opinion: [bold claim]"
 "90% of people get [topic] wrong. Here's why:"
@@ -122,14 +127,16 @@ Verified hierarchy: copy-link share 20.0 > reply/quote/DM-share 5.0 > like 0.5 �
 ### Real Example
 
 **❌ No hook:**
-```
+
+```text
 "Just finished reading an interesting book about productivity."
 
 [Ends with period. No invitation to engage.]
 ```
 
 **✅ With hook:**
-```
+
+```text
 "Just finished reading an interesting book about productivity.
 
 What's the best productivity book you've ever read? Looking for my next one 👇"
@@ -150,7 +157,7 @@ What's the best productivity book you've ever read? Looking for my next one 👇
 
 ### The Problem
 
-```
+```text
 Fake/inactive followers:
 ├── Never engage with your content
 ├── Algorithm sees low engagement rate
@@ -160,7 +167,7 @@ Fake/inactive followers:
 
 ### The Math
 
-```
+```text
 Account A: 1,000 real followers, 50 likes/post = 5% engagement
 Account B: 10,000 fake followers, 50 likes/post = 0.5% engagement
 
@@ -184,7 +191,8 @@ The Two-Tower retrieval builds your embedding from your content history. Inconsi
 ### Real Example
 
 **❌ Confused embedding:**
-```
+
+```text
 Monday: Tech startup tips
 Tuesday: Recipe for pasta
 Wednesday: Political hot take
@@ -195,7 +203,8 @@ Result: Algorithm can't figure out who to show your content to
 ```
 
 **✅ Clear embedding:**
-```
+
+```text
 Monday: SaaS growth tactics
 Tuesday: Startup hiring tips
 Wednesday: Founder mindset
@@ -220,13 +229,14 @@ Result: Clear signal → matched to startup/SaaS audience
 ### The Problem
 
 Common engagement bait phrases often get:
+
 1. Muted by users (muted keyword filter)
 2. Flagged as spam (visibility-filtering rules — some fire only on recommendations to non-followers)
 3. Trigger "Not interested" (−43.2, verified — harsher than a block)
 
 ### Examples to Avoid
 
-```
+```text
 ❌ "Like if you agree!"
 ❌ "Retweet for good luck"
 ❌ "Follow for follow"
@@ -248,13 +258,14 @@ Common engagement bait phrases often get:
 ### The Problem
 
 Not replying to comments:
+
 1. Misses engagement opportunity (reply weight 5.0 — 20.0 from mutual follows)
 2. Signals low interest in community
 3. People stop engaging
 
 ### Real Impact
 
-```
+```text
 Post with 50 comments, 0 author replies:
 ├── Conversation dies
 ├── Future engagement decreases
@@ -280,6 +291,7 @@ Post with 50 comments, 30 author replies:
 ### The Problem
 
 Posts that are just links:
+
 1. Take people off-platform (less engagement)
 2. No dwell time on the tweet
 3. Low native engagement
@@ -287,14 +299,16 @@ Posts that are just links:
 ### Real Example
 
 **❌ Link-first:**
-```
+
+```text
 "Check out my new article: [link]"
 
 Result: Click = leave X = no further engagement tracked
 ```
 
 **✅ Value-first:**
-```
+
+```text
 "I spent 40 hours researching [topic]. Here are the 5 key insights:
 
 1. [Insight]
@@ -321,13 +335,14 @@ Result: Dwell time + potential replies + then maybe click
 ### The Problem
 
 Age Filter removes posts older than **48 hours** (verified `MaxPostAgeHours=48`). Posts at dead times:
+
 1. Get less initial engagement
 2. Age out before peak hours
 3. Never get momentum
 
 ### Real Example
 
-```
+```text
 Post at 3 AM:
 ├── 0 engagement first 4 hours
 ├── By peak time, post is "old"

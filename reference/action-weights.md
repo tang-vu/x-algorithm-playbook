@@ -8,7 +8,7 @@
 
 The Phoenix model predicts a probability for each action a viewer might take on a post. `RankingScorer` (`home-mixer/scorers/ranking_scorer.rs`) folds those predictions into one number:
 
-```
+```text
 Final Score = Σ (weight_i × P(action_i))
 ```
 
@@ -113,7 +113,7 @@ A genuine boost for small accounts. Eligible = **original post** (not reply/RT) 
 
 Real values now known: `AuthorDiversityDecay = 0.5`, `AuthorDiversityFloor = 0.25`.
 
-```
+```text
 multiplier(k) = (1 − 0.25) × 0.5^k + 0.25     // k = your post's rank among your posts, by score
 
 k=0 (your best):  1.000
@@ -145,7 +145,7 @@ k=4:              0.2969
 
 ## Quick Reference Card
 
-```
+```text
 MAXIMIZE (real weights):
 ├── Share via copy link  20.0   ← biggest single lever
 ├── Reply                 5.0   (20.0 from mutual follows)

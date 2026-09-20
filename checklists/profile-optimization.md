@@ -8,7 +8,7 @@
 
 The algorithm tracks `profile_click` — though its direct weight is currently **0.0** (`ProfileClickWeight`, verified Aug 2026). What the profile page actually converts is the **follow** (weight 4.0). When someone clicks your profile:
 
-```
+```text
 Profile visit → They decide to follow (or not) in seconds
 ```
 
@@ -59,7 +59,7 @@ Your profile is your conversion page — optimize for the follow, not the click.
 
 ### Structure Template
 
-```
+```text
 [What you do] + [Who you help] + [Unique value/credential]
 ```
 
@@ -74,12 +74,14 @@ Your profile is your conversion page — optimize for the follow, not the click.
 ### Examples
 
 **❌ Bad:**
-```
+
+```text
 "Entrepreneur. Investor. Dreamer. Making the world better."
 ```
 
 **✅ Good:**
-```
+
+```text
 "Helping SaaS founders hit $1M ARR | Built 3 exits | Daily growth tactics"
 ```
 
@@ -169,21 +171,25 @@ When someone visits your profile, they see your recent posts.
 Run this monthly:
 
 ### Visual Elements
+
 - [ ] Profile picture is optimal
 - [ ] Banner is updated and effective
 - [ ] Visual brand is consistent
 
 ### Text Elements
+
 - [ ] Bio clearly communicates value
 - [ ] Location is set
 - [ ] Link is working and optimal
 
 ### Content Elements
+
 - [ ] Pinned tweet is best content
 - [ ] Recent posts represent my brand
 - [ ] Activity is consistent
 
 ### Conversion Test
+
 Ask yourself: If I landed on this profile for the first time, would I follow?
 
 - [ ] Value is clear
@@ -210,7 +216,7 @@ Track: Profile visits → follows conversion
 
 ## Quick Reference
 
-```
+```text
 PROFILE MUST-HAVES:
 □ Clear, professional profile pic
 □ Banner with value prop

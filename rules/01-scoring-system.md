@@ -8,16 +8,18 @@
 
 Every post is scored using this formula:
 
-```
+```text
 Final Score = Σ (weight_i × P(action_i))
 ```
 
 Where:
+
 - `P(action_i)` = probability that *this specific viewer* takes the action (predicted by the Phoenix transformer)
 - `weight_i` = that action's weight — **real values are public** in `home-mixer/params/param.rs`
 
 **Example (real weights):**
-```
+
+```text
 Score = 0.5×P(like) + 5.0×P(reply) + 1.0×P(retweet) + 20.0×P(copy_link_share) + ...
         − 31.2×P(block) − 234.0×P(report) − 58.8×P(mute) − 43.2×P(not_interested)
 ```
@@ -48,7 +50,7 @@ Phoenix's action taxonomy (64 heads in the model config) feeds ~26 weighted term
 
 The For You feed is built by two nested pipelines in `home-mixer`:
 
-```
+```text
 POST PIPELINE (PhoenixCandidatePipeline)
 1. Query Hydration      → viewer's recent engagement history (the model's main input),
                           following list, blocks/mutes, muted keywords, seen posts, topics
@@ -101,7 +103,7 @@ Two systems decide *what your post is* before ranking:
 
 The shipped tree is now the **real production stack** — JAX training, Rust gRPC serving, synthetic-data generators (no artifact download needed):
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                         PHOENIX RANKER                           │
 ├─────────────────────────────────────────────────────────────────┤
@@ -166,7 +168,7 @@ Real diversity curve: post #1 ×1.0, #2 ×0.625, #3 ×0.4375, #4 ×0.344 … flo
 
 ### The Score Optimization Hierarchy (updated for real weights)
 
-```
+```text
 1. Maximize P(copy-link share / DM share) → forwardable, "send this" content
 2. Maximize P(reply) + P(quote)           → questions, debatable takes  (×4 on mutuals)
 3. Maximize P(follow author)              → serial value worth subscribing to

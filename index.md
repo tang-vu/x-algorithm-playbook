@@ -26,7 +26,7 @@ title: X Algorithm Playbook
 
 ## The Algorithm in 60 Seconds
 
-```
+```text
 Your Post Score = Σ (weight × P(action))
 
 POSITIVE: copy-link share (20.0), reply/quote/DM-share (5.0), follow (4.0)…
@@ -88,7 +88,7 @@ NEGATIVE: report (−234), mute (−58.8), "not interested" (−43.2), block (�
 
 ## Repository Contents
 
-```
+```text
 x-algorithm-playbook/
 ├── rules/           # 7 core strategy guides
 ├── checklists/      # 3 actionable checklists

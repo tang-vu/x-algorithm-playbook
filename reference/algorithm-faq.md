@@ -71,6 +71,7 @@
 ### Q: Why did my reach suddenly drop?
 
 **A:** Possible causes:
+
 1. **Getting blocked/muted** by multiple users (author socialgraph filter)
 2. **Content topic shift** (embedding mismatch)
 3. **Algorithm changes** (happens regularly)
@@ -106,6 +107,7 @@
 ### Q: Do hashtags help?
 
 **A:** Not directly mentioned in scoring code. Hashtags may help with:
+
 1. Content embedding (topic signal)
 2. Search discovery
 3. User muted keyword filters (could hurt if hashtag is muted)
@@ -119,6 +121,7 @@ Use relevant hashtags sparingly.
 ### Q: Are threads better than single tweets?
 
 **A:** Threads have advantages:
+
 1. One published post = one author-position (vs N separate posts each taking a position in the diversity decay)
 2. Higher dwell time (people read multiple tweets)
 3. More engagement opportunities per thread
@@ -138,6 +141,7 @@ Use relevant hashtags sparingly.
 ### Q: Do images help?
 
 **A:** Photo Expand is tracked as a positive action, but it's low-weight. Images help more by:
+
 1. Stopping scroll (attention)
 2. Increasing dwell time
 3. Making content shareable
@@ -147,6 +151,7 @@ Use relevant hashtags sparingly.
 ### Q: What about external links?
 
 **A:** The code doesn't show explicit link penalties. However:
+
 - Links take users off-platform (less engagement)
 - Native content generally performs better
 - Link previews may affect scroll behavior
@@ -166,6 +171,7 @@ Use relevant hashtags sparingly.
 ### Q: What is the Two-Tower model?
 
 **A:** A retrieval system with two neural networks:
+
 1. **User Tower:** Encodes user + history into embedding
 2. **Candidate Tower:** Encodes posts into embeddings
 3. **Matching:** Dot product similarity finds relevant posts
@@ -186,7 +192,7 @@ Use relevant hashtags sparingly.
 
 **A:** Within one feed response, your posts are sorted by score, and each extra post from the same author is attenuated by its rank — decaying toward a floor (never to zero). **Real values** (Aug 2026): `decay=0.5`, `floor=0.25`:
 
-```
+```text
 Post 1: 100%   Post 2: 62.5%   Post 3: 43.75%   Post 4: 34.4%   …→ 25% floor
 ```
 

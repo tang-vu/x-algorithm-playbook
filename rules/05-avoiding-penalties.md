@@ -66,50 +66,62 @@ These actions carry **negative** weight and SUBTRACT from your score — **real 
 Two layers can remove your post — **17 pre-scoring pipeline filters** + the **visibility-filtering rule engine** (28 shared rules + 26 that only apply to recommendations to non-followers). [Full reference →](../reference/filter-system.md)
 
 ### 1. Age Filter
+
 - Posts older than **48 hours** (`MaxPostAgeHours=48`) are dropped — verified
 - **Avoid:** Posting at dead times
 
 ### 2. Drop Duplicates Filter
+
 - Duplicate tweet IDs removed
 - **Avoid:** Posting same content twice
 
 ### 3. Core Data Hydration Filter
+
 - Posts missing text or author removed
 - **Avoid:** N/A (technical issue)
 
 ### 4. Self Tweet Filter
+
 - Your own posts removed from your feed
 - **Avoid:** N/A (expected behavior)
 
 ### 5. Retweet Deduplication Filter
+
 - Multiple retweets of same content deduplicated
 - **Avoid:** N/A (expected behavior)
 
 ### 6. Ineligible Subscription Filter
+
 - Paywalled content from non-subscribed users removed
 - **Avoid:** N/A (subscription feature)
 
 ### 7. Previously Seen Posts Filter
+
 - Posts user already saw are removed
 - **Avoid:** N/A (expected behavior)
 
 ### 8. Previously Served Posts Filter
+
 - Already-served posts in session removed
 - **Avoid:** N/A (expected behavior)
 
 ### 9. Muted Keyword Filter ⚠️
+
 - Posts with user's muted keywords hidden
 - **Avoid:** Spam words, controversial terms
 
 ### 10. Author Socialgraph Filter ⚠️
+
 - Posts from blocked/muted authors hidden
 - **Avoid:** Getting blocked/muted
 
 ### 11. OON/NSFW/subscription/new-user filters
+
 - OON retweet+reply dedup, OON NSFW (SimClusters), ineligible subscriptions, new-user min-engagement, inventory holdouts, plus post-selection `DedupConversationFilter`
 - **Avoid:** N/A mostly (expected behavior)
 
 ### 12. VF Filter (Visibility Filtering) ⚠️ — post-selection
+
 - A whole second engine (`visibility-filtering/`): spam, violence, gore, deleted posts, **legal takedowns**, NSFW, account-state labels → verdicts **allow / interstitial / drop**
 - **26 rules fire only for non-followers** — the "OON ceiling": visible to followers, invisible in recommendations
 - Replies/quotes of a dropped post get dropped too (`AncillaryVFFilter`)
@@ -124,7 +136,8 @@ Two layers can remove your post — **17 pre-scoring pipeline filters** + the **
 Common words that get muted:
 
 ### Promotional Spam
-```
+
+```text
 ❌ "DM me"
 ❌ "Link in bio"
 ❌ "Follow for follow"
@@ -133,7 +146,8 @@ Common words that get muted:
 ```
 
 ### Crypto/Scam Adjacent
-```
+
+```text
 ❌ "100x"
 ❌ "Guaranteed returns"
 ❌ "Not financial advice"
@@ -141,14 +155,16 @@ Common words that get muted:
 ```
 
 ### Engagement Bait
-```
+
+```text
 ❌ "Like if you agree"
 ❌ "Retweet to win"
 ❌ "Follow + RT"
 ```
 
 ### Political/Divisive (Niche-Dependent)
-```
+
+```text
 ⚠️ Political keywords (muted by many)
 ⚠️ Controversial names
 ⚠️ Culture war terms
@@ -171,7 +187,7 @@ Common words that get muted:
 
 Patterns that may trigger spam detection:
 
-```
+```text
 ❌ Same reply on multiple posts
 ❌ Mass following/unfollowing
 ❌ Suspicious posting patterns
@@ -194,7 +210,7 @@ Patterns that may trigger spam detection:
 
 ### Handling Conflict
 
-```
+```text
 When someone attacks you:
 ├── Don't engage (engagement signals interest)
 ├── Block if necessary (protects your experience)

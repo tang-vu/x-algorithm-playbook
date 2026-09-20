@@ -14,15 +14,15 @@ assignees: ''
 
 <!-- Where in the playbook? Include file path or link -->
 
-- File: 
-- Section: 
+- File:
+- Section:
 
 ## Expected vs Actual
 
-**Expected:** 
+**Expected:**
 <!-- What should it say/do? -->
 
-**Actual:** 
+**Actual:**
 <!-- What does it currently say/do? -->
 
 ## Source/Reference

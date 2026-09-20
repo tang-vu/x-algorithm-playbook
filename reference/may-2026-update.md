@@ -1,7 +1,7 @@
 # What's New — May 15, 2026 Release
 
 > ⚠️ **Superseded.** Two later drops changed the picture significantly — the real weights, the visibility-filtering stack, and the production Phoenix code shipped in August–September 2026. Read **[What's New — August–September 2026](september-2026-update.md)** for current facts; this page is kept for history. Where they conflict (e.g. "weights are redacted"), the newer page is right.
-
+>
 > The biggest open-source drop since the algorithm went public. This page summarizes what changed in [`xai-org/x-algorithm`](https://github.com/xai-org/x-algorithm) and — more importantly — **what it means for your reach.**
 
 ---
@@ -80,7 +80,7 @@ uv run phoenix/run_pipeline.py --artifacts_dir artifacts/oss-phoenix-artifacts
 
 ### 2. There are now several reach doors — topic clarity opens all of them
 
-```
+```text
 Sharp, consistent topic  →  clean embedding
                          →  Phoenix Retrieval + Topics + MoE eligible
                          →  reaches people who actually care
