@@ -1,6 +1,12 @@
+---
+description: "The negative weights and filters that destroy reach — reports, mutes, blocks, and the 54-rule visibility-filtering engine."
+---
+
 # Avoiding Penalties
 
 > How to avoid the negative actions and filters that destroy your reach.
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 
@@ -63,11 +69,11 @@ These actions carry **negative** weight and SUBTRACT from your score — **real 
 
 ## The Filters That Can Hide Your Content
 
-Two layers can remove your post — **17 pre-scoring pipeline filters** + the **visibility-filtering rule engine** (28 shared rules + 26 that only apply to recommendations to non-followers). [Full reference →](../reference/filter-system.md)
+Two layers can remove your post — **19 pre-scoring pipeline filters** + the **visibility-filtering rule engine** (28 shared rules + 26 that only apply to recommendations to non-followers). [Full reference →](../reference/filter-system.md)
 
 ### 1. Age Filter
 
-- Posts older than **48 hours** (`MaxPostAgeHours=48`) are dropped — verified
+- Posts older than **48 hours** are dropped (`MAX_POST_AGE` in `home-mixer/params/config.rs`) — verified
 - **Avoid:** Posting at dead times
 
 ### 2. Drop Duplicates Filter

@@ -1,6 +1,12 @@
+---
+description: "The reach-killing mistakes creators make on X — mapped to real algorithm weights, filters, and verified mechanics."
+---
+
 # Common Mistakes
 
 > Mistakes that hurt your algorithm score, based on how the system actually works.
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 
@@ -220,7 +226,7 @@ Result: Clear signal → matched to startup/SaaS audience
 - Stay consistent
 - If you have multiple interests, consider separate accounts
 
-**Source:** `phoenix/recsys_retrieval_model.py`
+**Source:** `phoenix/xrex/models/recsys_sid_retrieval_model.py` (renamed from the May demo's `recsys_retrieval_model.py`)
 
 ---
 
@@ -334,7 +340,7 @@ Result: Dwell time + potential replies + then maybe click
 
 ### The Problem
 
-Age Filter removes posts older than **48 hours** (verified `MaxPostAgeHours=48`). Posts at dead times:
+Age Filter removes posts older than **48 hours** (verified: `MAX_POST_AGE = 48 * 60 * 60` in `home-mixer/params/config.rs`). Posts at dead times:
 
 1. Get less initial engagement
 2. Age out before peak hours

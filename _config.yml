@@ -3,4 +3,13 @@ repository: tang-vu/x-algorithm-playbook
 title: X Algorithm Playbook
 description: The definitive guide to maximizing your reach on X (Twitter), based on reverse-engineering the open-source algorithm.
 logo: assets/logo.svg
+url: "https://tang-vu.github.io"
+baseurl: "/x-algorithm-playbook"
+plugins:
+  - jekyll-sitemap
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: /assets/og-cover.png
 show_downloads: false

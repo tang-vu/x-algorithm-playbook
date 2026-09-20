@@ -1,6 +1,12 @@
+---
+description: "When and how often to post: the author-diversity decay curve, the 48-hour age filter, and verified spacing math."
+---
+
 # Timing & Frequency
 
 > When to post and how often, based on algorithm mechanics.
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 
@@ -82,7 +88,7 @@ Benefits:
 
 ## The Age Filter
 
-Posts older than a threshold are filtered out entirely — **verified: 48 hours** (`MaxPostAgeHours=48`).
+Posts older than a threshold are filtered out entirely — **verified: 48 hours** (`MAX_POST_AGE = 48 * 60 * 60` seconds in [`home-mixer/params/config.rs`](https://github.com/xai-org/x-algorithm/blob/main/home-mixer/params/config.rs), consumed by `AgeFilter` — not a `param.rs` entry).
 
 ### Implications
 

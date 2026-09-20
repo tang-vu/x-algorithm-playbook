@@ -1,5 +1,14 @@
 ﻿# Dependencies
 node_modules/
+
+# Jekyll
+Gemfile.lock
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+.bundle/
+vendor/
 .pnpm-store/
 .claude
 .opencode

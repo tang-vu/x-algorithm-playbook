@@ -1,6 +1,12 @@
+---
+description: "Which content formats and hooks maximize your algorithm score — real X algorithm weights for video, images, links, and dwell time."
+---
+
 # Content Optimization
 
 > How to create content that maximizes your algorithm score.
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 

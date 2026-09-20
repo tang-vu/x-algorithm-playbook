@@ -1,6 +1,12 @@
+---
+description: "Optimize your X profile for the follow conversion the algorithm actually weights — a step-by-step checklist."
+---
+
 # Profile Optimization Checklist
 
 > Optimize your profile for maximum conversion (profile visit → follow).
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 

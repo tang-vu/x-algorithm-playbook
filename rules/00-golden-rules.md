@@ -1,6 +1,12 @@
+---
+description: "The 10 highest-leverage rules for X reach — verified algorithm weights, filters, and penalties straight from the open-source code."
+---
+
 # The 10 Golden Rules of X Algorithm
 
 > These are the most important rules distilled from the X algorithm source code — **updated with the real published weights** (Aug–Sep 2026 releases). Master these and you'll outperform 95% of accounts.
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 
@@ -129,7 +135,7 @@
 
 ## Rule 7: Don't Get Filtered 🚫
 
-**Why:** Two filtering layers can COMPLETELY HIDE your content: **17 pre-scoring pipeline filters** (incl. a hard 48-hour age limit) plus the **visibility-filtering rule engine** — 28 rules that apply to everyone and **26 extra rules that only fire on recommendations to non-followers** (spam-high-recall, NSFW, DMCA media, do-not-amplify labels…). Your post can look fine to followers while being invisible to everyone else.
+**Why:** Two filtering layers can COMPLETELY HIDE your content: **19 pre-scoring pipeline filters** (incl. a hard 48-hour age limit) plus the **visibility-filtering rule engine** — 28 rules that apply to everyone and **26 extra rules that only fire on recommendations to non-followers** (spam-high-recall, NSFW, DMCA media, do-not-amplify labels…). Your post can look fine to followers while being invisible to everyone else.
 
 **Filters that can block you:**
 
@@ -172,7 +178,7 @@
 - Use engagement pods (pattern detected)
 - Ignore your community
 
-**Algorithm source:** `phoenix/recsys_retrieval_model.py` - Two-Tower model
+**Algorithm source:** `phoenix/xrex/models/recsys_sid_retrieval_model.py` — two-tower retrieval (renamed from the May demo's `recsys_retrieval_model.py`)
 
 ---
 

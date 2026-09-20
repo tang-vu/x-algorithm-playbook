@@ -1,6 +1,12 @@
+---
+description: "Why threads go viral on X — dwell time, engagement density, and the scoring mechanics behind breakout threads."
+---
+
 # Anatomy of a Viral Thread
 
 > Breaking down what makes threads go viral, based on algorithm mechanics.
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 

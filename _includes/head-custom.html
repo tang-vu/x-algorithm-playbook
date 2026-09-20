@@ -1,2 +1,32 @@
 <link rel="icon" type="image/svg+xml" href="{{ '/assets/favicon.svg' | relative_url }}">
 <link rel="alternate icon" href="{{ '/assets/favicon.svg' | relative_url }}">
+
+{%- if page.url == "/" %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": {{ site.title | jsonify }},
+  "description": {{ site.description | jsonify }},
+  "url": {{ "/" | absolute_url | jsonify }},
+  "author": { "@type": "Person", "name": "Vu Tang", "url": "https://github.com/tang-vu" }
+}
+</script>
+{%- else %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": {{ page.title | default: site.title | jsonify }},
+  "description": {{ page.description | default: site.description | jsonify }},
+  "url": {{ page.url | absolute_url | jsonify }},
+  "inLanguage": "en-US",
+  "author": { "@type": "Person", "name": "Vu Tang", "url": "https://github.com/tang-vu" },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": {{ site.title | jsonify }},
+    "url": {{ "/" | absolute_url | jsonify }}
+  }
+}
+</script>
+{%- endif %}

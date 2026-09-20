@@ -1,6 +1,12 @@
+---
+description: "Every filter and visibility rule that can hide your post — the 19-stage pipeline plus the 54-rule visibility-filtering engine."
+---
+
 # Filter System Reference
 
 > Complete guide to every layer that can hide your content — pipeline filters **and** the visibility-filtering rule engine, now fully public since the August 13, 2026 release.
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 
@@ -29,7 +35,7 @@ Filtering happens in **two separate systems**, and they answer different questio
 
 ## Layer 1: Pipeline Filters
 
-### Pre-scoring filters (17, in order)
+### Pre-scoring filters (19 wired, in order)
 
 These run before the ML scorer (`home-mixer/filters/`):
 
@@ -37,7 +43,7 @@ These run before the ML scorer (`home-mixer/filters/`):
 |---|--------|---------|
 | 1 | `DropDuplicatesFilter` | Same post returned by multiple sources |
 | 2 | `CoreDataHydrationFilter` | Posts whose text/metadata failed to load |
-| 3 | `AgeFilter` | **Posts older than 48 hours** (now explicit) |
+| 3 | `AgeFilter` | **Posts older than 48 hours** (`MAX_POST_AGE`, `params/config.rs`) |
 | 4 | `SelfTweetFilter` | Your own posts |
 | 5 | `OONRetweetReplyFilter` | Reposts/replies from non-followed accounts; replies with missing parent |
 | 6 | `OONNsfwSimclustersFilter` | SimClusters-sourced posts by adult-flagged authors (OON only) |
@@ -46,16 +52,18 @@ These run before the ML scorer (`home-mixer/filters/`):
 | 9 | `PreviouslySeenPostsFilter` | Posts already shown |
 | 10 | `PreviouslySeenPostsBackupFilter` | Same, from a second impressions record |
 | 11 | `PreviouslyServedPostsFilter` | Posts served earlier this session |
-| 12 | `MutedKeywordFilter` | Posts matching the viewer's muted keywords |
+| 12 | `ViewerMutedKeywordFilter` | Posts matching the viewer's muted keywords (upstream README calls it `MutedKeywordFilter`) |
 | 13 | `AuthorSocialgraphFilter` | Posts from accounts the viewer blocks/mutes |
-| 14 | `VideoFilter` | Video posts when the request excludes video |
-| 15 | `TopicIdsFilter` | Posts outside requested topics / in excluded topics |
-| 16 | `NewUserMinEngagementFilter` | For new accounts: OON posts under an engagement bar (default off) |
-| 17 | `InventoryHoldoutFilter` | A configured % held out per post+viewer (default off) |
+| 14 | `Brazil2026ElectionFilter` | Posts from accounts reported to Brazil's Electoral Court — unless the viewer follows the account |
+| 15 | `VideoFilter` | Video posts when the request excludes video |
+| 16 | `TopicIdsFilter` | Posts outside requested topics / in excluded topics |
+| 17 | `NewUserMinEngagementFilter` | For new accounts: OON posts under an engagement bar (default off) |
+| 18 | `InventoryHoldoutFilter` | A configured % held out per post+viewer (default off) |
+| 19 | `FavHoldoutFilter` | Per-post impression holdout that scales with the post's fav count — gated by `EnableFavHoldout=false` (default off) |
 
-**+ `Brazil2026ElectionFilter`** (added Aug 14, 2026): removes posts from accounts reported to Brazil's Electoral Court for the 2026 election — unless the viewer follows the account. The first **law-driven filter published in the repo**; expect more jurisdiction-specific rules like this.
+The upstream README documents 17 of these; the code wires two more: **`Brazil2026ElectionFilter`** (added Aug 14, 2026 — removes posts from accounts reported to Brazil's Electoral Court for the 2026 election unless the viewer follows the account; the first **law-driven filter published in the repo**, list updated Aug 27) and **`FavHoldoutFilter`** (shipped in the same file as the inventory holdout; default off). Expect more jurisdiction-specific rules like Brazil's.
 
-Also on disk for other surfaces/modules: `following_viewer_muted_keyword_filter`, `following_retweet_deduplication_filter`, `self_reply_chain_filter`, `popular_topics_author_dedup_filter`, `push_to_home_dedup_filter`, `invalid_conversation_module_filter`, `result_size_filter`, `fav_holdout_filter`, `ad_adjacent_served_filter`.
+Also on disk for other surfaces/modules: `following_viewer_muted_keyword_filter`, `following_retweet_deduplication_filter`, `self_reply_chain_filter`, `popular_topics_author_dedup_filter`, `push_to_home_dedup_filter`, `invalid_conversation_module_filter`, `result_size_filter`, `ad_adjacent_served_filter`.
 
 ### Post-selection filters (3)
 
@@ -145,7 +153,7 @@ xAI now ships a transparency tool — **Under the Hood** — that shows aggregat
 ## Filter Avoidance Checklist
 
 ```text
-□ No spam/bait keywords (MutedKeywordFilter, SpamTweetLabelRule)
+□ No spam/bait keywords (ViewerMutedKeywordFilter, SpamTweetLabelRule)
 □ Nothing that earns blocks/mutes (AuthorSocialgraph, ViewerBlocks/Mutes)
 □ Media is clean — no borderline NSFW/gore (interstitials + OON drops)
 □ Account standing clean — check Under the Hood monthly

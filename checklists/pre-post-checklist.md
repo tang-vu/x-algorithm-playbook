@@ -1,6 +1,12 @@
+---
+description: "A 30-second pre-publish checklist against the X algorithm's verified weights, filters, and penalties."
+---
+
 # Pre-Post Checklist
 
 > Run through this checklist before publishing any post.
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 

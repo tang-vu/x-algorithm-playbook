@@ -8,7 +8,9 @@
 
 ## Why This Exists
 
-X (formerly Twitter) open-sourced their recommendation algorithm, and xAI [ships regular updates](https://github.com/xai-org/x-algorithm) — latest: **September 18, 2026** (refreshed every ~4 weeks with developer notes). This playbook distills thousands of lines of code into **actionable rules** that anyone can follow to maximize their reach.
+X (formerly Twitter) open-sourced their recommendation algorithm, and xAI [ships regular updates](https://github.com/xai-org/x-algorithm) — latest: **September 18, 2026** (the repo syncs near-daily; notable-update dev notes land roughly monthly). This playbook distills thousands of lines of code into **actionable rules** that anyone can follow to maximize their reach.
+
+*All numbers last verified **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7).*
 
 **No fluff. No guesswork. Just algorithm-backed strategies.**
 
@@ -43,7 +45,7 @@ Where actions include (real weights):
 └── BOOST:   reply on a mutual-follow original post → 20.0
 ```
 
-**Key insight:** Phoenix predicts 64 action classes (24 named feed actions + continuous dwell signals); ~26 weighted terms feed the score. Weights multiply *predicted probabilities per viewer*, not raw counts. Your goal: maximize positive action probability, avoid negative signals.
+**Key insight:** Phoenix predicts a 64-class action taxonomy (24 named feed actions + continuous dwell signals); the scorer folds **26 weighted terms** into the score. Weights multiply *predicted probabilities per viewer*, not raw counts. Your goal: maximize positive action probability, avoid negative signals.
 
 ---
 
@@ -87,7 +89,7 @@ x-algorithm-playbook/
 4. **In-network first** — Out-of-network content takes a verified ×0.75 discount
 5. **Video > Image > Text** — Verified 10s minimum; direct video weight is small (0.07)
 6. **Dwell time matters** — Continuous dwell term (0.004) rewards longer reads
-7. **Don't trigger filters** — 17 pipeline filters + a 54-rule visibility engine can hide you
+7. **Don't trigger filters** — 19 pipeline filters + a 54-rule visibility engine can hide you
 8. **Engage authentically** — Algorithm tracks your interaction patterns
 9. **Niche down** — Semantic IDs + SimClusters reward consistent topics
 10. **Quality > Quantity** — One great post beats five mediocre ones
@@ -118,7 +120,7 @@ The algorithm uses a **Grok-based transformer model** (Phoenix) to predict engag
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  FILTERING (17 pre-scoring filters can remove your post)         │
+│  FILTERING (19 pre-scoring filters can remove your post)         │
 │  ├── Age filter (>48h — verified)                                │
 │  ├── Muted keywords                                              │
 │  ├── Blocked/muted authors                                       │
