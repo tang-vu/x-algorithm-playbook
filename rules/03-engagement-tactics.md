@@ -6,17 +6,21 @@
 
 ## The Engagement Priority
 
-Based on algorithm weights:
+Based on the **real published weights** (`params/param.rs`):
 
-```
-Reply > Quote > Follow > Retweet > Like > Click > Dwell
+```text
+Copy-link share (20.0) > Reply (5.0) = DM share (5.0) = Quote (5.0)
+  > Follow (4.0) > Share (2.0) > Retweet (1.0) > Like (0.5)
+  > Click (0.4) > Dwell (0.05)
 ```
 
-Focus your effort accordingly.
+Focus your effort accordingly — and remember: a reply from a **mutual follow** on your original post is weighted **20.0** (`BidirectionalFollowReplyWeightBoost=15.0`, July 2026).
 
 ---
 
-## Driving Replies (Highest Value)
+## Driving Replies & Sends (Highest Value)
+
+> **New top lever (Aug 2026):** `ShareViaCopyLinkWeight=20.0` — the single biggest weight — fires when someone copies your post's link to send it elsewhere. DM shares are 5.0. Write "send this to someone who…" content: forwardability now outranks everything else.
 
 ### Tactics That Work
 
@@ -33,7 +37,7 @@ Focus your effort accordingly.
 
 Posts that naturally generate replies:
 
-```
+```text
 ✅ "What's the one thing you wish you knew about [topic]?"
 ✅ "Hot take: [bold claim]. Change my mind."
 ✅ "I'll review your [X] in the replies. Drop it below."
@@ -45,7 +49,7 @@ Posts that naturally generate replies:
 
 Posts that shut down conversation:
 
-```
+```text
 ❌ Statements with no hook ("Just launched my product!")
 ❌ Self-promotion without value
 ❌ Already-answered questions
@@ -70,7 +74,7 @@ Quote tweets signal that your content is worth adding to.
 
 ### Making Content Quotable
 
-```
+```text
 ✅ DO:
 • Make points standalone (don't require context)
 • Create "reaction-worthy" moments
@@ -87,7 +91,7 @@ Quote tweets signal that your content is worth adding to.
 
 ## Driving Follows
 
-Follows have high weight because they signal "I want more from this person."
+Follows have verified high weight (4.0) because they signal "I want more from this person."
 
 ### Follow Triggers
 
@@ -103,7 +107,7 @@ Follows have high weight because they signal "I want more from this person."
 
 When someone clicks your profile (tracked!), they decide in seconds:
 
-```
+```text
 ✅ Bio: Clear value proposition
 ✅ Pinned: Your best content
 ✅ Banner: Professional or memorable
@@ -116,7 +120,7 @@ When someone clicks your profile (tracked!), they decide in seconds:
 
 ### The 80/20 Rule
 
-```
+```text
 80% of your time: Engaging with others
 20% of your time: Creating content
 ```
@@ -136,7 +140,7 @@ Why? The Two-Tower retrieval system uses YOUR engagement history to build your e
 
 When replying to others:
 
-```
+```text
 1. Add value (insight, question, resource)
 2. Be early (first replies get more visibility)
 3. Be authentic (genuine > performative)
@@ -159,7 +163,7 @@ When replying to others:
 
 The first hour after posting is critical:
 
-```
+```text
 Post → Immediate engagement → Algorithm sees signal → More distribution
 ```
 
@@ -181,9 +185,9 @@ Post → Immediate engagement → Algorithm sees signal → More distribution
 
 ### The Block/Mute Danger Zone
 
-Remember: a block carries strong negative weight and is hard to undo. Avoid:
+Verified values: report −234.0, **mute −58.8, not-interested −43.2**, block −31.2 — note that mutes and "not interested" are *harsher* than blocks. These multiply predicted probabilities, so avoid consistently *annoying* people, not just the rare block. Avoid:
 
-```
+```text
 ❌ Unsolicited DMs
 ❌ Tagging people randomly
 ❌ Replying to every viral tweet
@@ -197,7 +201,7 @@ Remember: a block carries strong negative weight and is hard to undo. Avoid:
 
 ### Daily Engagement Routine
 
-```
+```text
 Morning (30 min):
 ├── Engage with 10-20 posts in your niche
 ├── Reply to comments on your posts

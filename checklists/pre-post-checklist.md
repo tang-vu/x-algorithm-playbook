@@ -7,23 +7,27 @@
 ## Quick Check (30 seconds)
 
 ### ✅ The Hook
+
 - [ ] First line stops the scroll
 - [ ] Creates curiosity or value promise
 - [ ] No weak starts ("Just wanted to share...")
 
 ### ✅ The Format
+
 - [ ] Easy to read (spacing, bullets, emojis)
 - [ ] Not a wall of text
 - [ ] Mobile-friendly length
 
 ### ✅ The Engagement Hook
+
 - [ ] Ends with question or CTA
 - [ ] Invites replies/discussion
 - [ ] Not ending with a period (.)
 
 ### ✅ The Media (if applicable)
+
 - [ ] Image adds value (not generic)
-- [ ] Video > 10 seconds (for VQV bonus)
+- [ ] Video > 10 seconds (verified gate; direct video weight is small — it earns via dwell)
 - [ ] Video has captions
 - [ ] Native upload (not external link)
 
@@ -32,18 +36,22 @@
 ## Content Quality Check
 
 ### Value Assessment
+
 - [ ] Would I engage with this if I saw it?
 - [ ] Does it provide unique value?
 - [ ] Is this my best work?
 
 ### Niche Alignment
+
 - [ ] Matches my usual topics
 - [ ] Builds my authority
 - [ ] Target audience would care
 
 ### Engagement Potential
+
 - [ ] Could this generate replies?
-- [ ] Is it quotable/shareable?
+- [ ] **Would someone copy the link to send it to a friend?** (top weight: 20.0)
+- [ ] Is it quotable/shareable? (quote 5.0, DM share 5.0)
 - [ ] Would someone bookmark this?
 
 ---
@@ -51,12 +59,14 @@
 ## Safety Check
 
 ### Negative Signal Prevention
+
 - [ ] No spam keywords (DM me, link in bio, follow for follow)
 - [ ] Not controversial enough to trigger blocks
 - [ ] Compliant with X ToS
 - [ ] No muted keyword risks
 
 ### Timing Check
+
 - [ ] 3+ hours since last post (diversity penalty)
 - [ ] Peak time for my audience
 - [ ] I'll be available first hour to engage
@@ -66,13 +76,15 @@
 ## Pre-Flight Final
 
 ### Before Hitting Post
+
 - [ ] Read it aloud (catches awkward phrasing)
 - [ ] Checked for typos
 - [ ] Links work (if any)
 - [ ] Tags are appropriate (not spam tagging)
 
 ### Ready to Launch?
-```
+
+```text
 If all checks pass → POST
 If any check fails → REVISE
 If unsure → DON'T POST (quality over quantity)
@@ -83,11 +95,13 @@ If unsure → DON'T POST (quality over quantity)
 ## Post-Publish Checklist
 
 ### First 15 Minutes
+
 - [ ] Drop your own reply/context if planned
 - [ ] Be ready to respond to first comments
 - [ ] Don't abandon the post
 
 ### First Hour
+
 - [ ] Respond to ALL replies
 - [ ] Thank people for engagement
 - [ ] Keep conversation going
@@ -98,7 +112,7 @@ If unsure → DON'T POST (quality over quantity)
 
 Copy this for fast checking:
 
-```
+```text
 PRE-POST:
 □ Hook is strong
 □ Format is clean

@@ -13,8 +13,8 @@ From the algorithm's perspective, threads are powerful because:
 | One published post | A thread is one author-position, not N competing posts |
 | High dwell time | User reads multiple tweets = strong signal |
 | Multiple engagement points | More opportunities for likes/replies |
-| Shareability | Easy to quote/retweet the thread |
-| Completion signal | Finishing a thread = strong interest |
+| Shareability | Easy to quote/retweet — and copy-link share (verified top weight: 20.0) |
+| Completion signal | Finishing a thread = strong interest (dwell) |
 
 ---
 
@@ -22,7 +22,7 @@ From the algorithm's perspective, threads are powerful because:
 
 ### The Proven Formula
 
-```
+```text
 Tweet 1: HOOK
 ├── Stop the scroll
 ├── Promise value
@@ -39,7 +39,7 @@ Tweet 10: CLOSE
 ├── Summary/takeaway
 ├── Call to action
 ├── Follow request
-└── Bookmark reminder
+└── Share prompt ("send this to…" targets the 20.0 copy-link weight)
 ```
 
 ---
@@ -48,7 +48,7 @@ Tweet 10: CLOSE
 
 ### Template
 
-```
+```text
 Tweet 1 (Hook):
 "I [did X thing] for [time period].
 
@@ -69,6 +69,7 @@ Tweet 10 (Close):
 If this helped:
 • Follow @handle for more
 • RT the first tweet
+• Send it to someone who's [doing X]
 • Save for later
 
 What would you add?"
@@ -82,8 +83,8 @@ What would you add?"
 | "Lessons" framing | Promised value |
 | One lesson per tweet | Easy dwell time |
 | Clear formatting | Readability |
-| Question at end | Drives replies |
-| RT request | Explicit amplification ask |
+| Question at end | Drives replies (5.0) |
+| RT + send request | Amplification ask — copy-link share is the 20.0 top weight |
 
 ---
 
@@ -91,7 +92,7 @@ What would you add?"
 
 ### Template
 
-```
+```text
 Tweet 1 (Hook):
 "Unpopular opinion: [bold contrarian statement]
 
@@ -132,7 +133,7 @@ Agree or disagree? Let me know below 👇"
 
 ### Template
 
-```
+```text
 Tweet 1 (Hook):
 "I spent [time] compiling [number] [resources] for [audience].
 
@@ -196,7 +197,7 @@ Follow for more [niche] content."
 
 ### When to Post Threads
 
-```
+```text
 Best days: Tuesday - Thursday
 Best times: Morning or evening peak hours
 
@@ -207,7 +208,7 @@ Why: More time for engagement to build
 
 ### First Hour Strategy
 
-```
+```text
 0-15 min: Post thread
 15-30 min: Reply to every comment
 30-60 min: Continue engaging
@@ -224,7 +225,7 @@ The first hour determines if thread takes off.
 
 Add value after posting:
 
-```
+```text
 "One more thing I forgot to mention..."
 "Someone asked about X. Here's the answer..."
 "Here's an example of #3 in action..."
@@ -232,7 +233,7 @@ Add value after posting:
 
 ### Quote Tweet Your Own Thread
 
-```
+```text
 Next day: "This thread is still getting traction. 
 
 Here's the most underrated insight from it:"
@@ -242,7 +243,7 @@ Here's the most underrated insight from it:"
 
 ### Repurpose Threads
 
-```
+```text
 Thread → Blog post
 Thread → Newsletter
 Thread → Video script

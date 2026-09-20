@@ -10,7 +10,7 @@ Understanding how the algorithm finds you new followers:
 
 ### In-Network (Followers)
 
-```
+```text
 Your post → Directly to followers' For You feeds
 Advantage: No OON penalty, direct delivery
 Strategy: Keep them engaged, avoid unfollows
@@ -18,11 +18,13 @@ Strategy: Keep them engaged, avoid unfollows
 
 ### Out-of-Network (Discovery)
 
-```
-Your post → Phoenix Two-Tower Retrieval → Matched to similar users
-Challenge: OON_WEIGHT_FACTOR penalty
+```text
+Your post → Phoenix Two-Tower Retrieval / SimClusters → Matched to similar users
+Challenge: verified ×0.75 discount (OonWeightFactor; ×0.5 on topic surfaces)
 Strategy: Strong engagement signals, clear niche
 ```
+
+> Note: since Aug 2026, in-network **replies and retweets also take the ×0.75** (`EnableOonRescoreForInNetworkRepliesRetweets=true`) — only *original posts* get the full in-network score.
 
 ---
 
@@ -30,7 +32,7 @@ Strategy: Strong engagement signals, clear niche
 
 How the algorithm decides to show your content to non-followers:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                    TWO-TOWER RETRIEVAL                          │
 ├─────────────────────────────────────────────────────────────────┤
@@ -59,35 +61,38 @@ How the algorithm decides to show your content to non-followers:
 
 ---
 
-## May 2026 Reach Paths
+## Out-of-Network Reach Doors
 
-> 🆕 The May 15, 2026 update exposes **multiple out-of-network doors**, not just generic retrieval. Each is a separate way to reach non-followers — and they reward different things.
+> Updated for the Aug–Sep 2026 code. There are **multiple out-of-network doors**, not just generic retrieval — each rewards slightly different things, and one new door (SimClusters) joined in August.
 
 | Door | What gets you in | How to optimize |
 |------|------------------|-----------------|
-| **Phoenix Retrieval** | Embedding similarity to a user's history | Strong, consistent niche embedding |
+| **Phoenix Retrieval** | Embedding similarity between your post's semantic ID and a user's engagement history | Strong, consistent niche embedding |
+| **SimClusters** 🆕 | Your account/post clusters with accounts the user already engages with | Consistent niche → you cluster with the right neighborhood |
 | **Phoenix Topics** | Your post maps cleanly to a topic the user engages with | One sharp topic per post; let `grox` classify you correctly |
-| **Phoenix MoE** | A specialist "expert" matches your interest area | Depth + consistency in a sub-niche (expert signal) |
+| **Phoenix MoE** | A specialist "expert" matches your interest area | ⚠️ off by default (`EnablePhoenixMOESource=false`) — A/B experiment, don't rely on it |
 | **Who-to-Follow** | You're suggested as an account worth following | High follow-through rate, clear profile + bio, consistent value |
 | **Thunder (in-network)** | Followers, instantly | Keep existing followers engaged; avoid unfollows/mutes |
 
 ### What changed strategically
 
-```
+```text
 OLD mental model:  "go viral in retrieval or stay invisible"
 NEW mental model:  several doors, each opened by TOPIC CLARITY + CONSISTENCY
+  • Phoenix retrieval reads your post's semantic ID (embedding identity)
+  • SimClusters reads WHO engages with you (engagement-neighborhood identity)
 
 → A mid-engagement post on a SHARP topic can still get OON reach
-  via Topics / MoE, even if generic retrieval would skip it.
-→ Topic-hopping smears your embedding and shuts ALL the doors.
+  via Topics / cluster match, even if generic retrieval would skip it.
+→ Topic-hopping smears your embedding AND your cluster — shuts ALL the doors.
 ```
 
 ### How to play it
 
-1. **Pick a topic per post and commit to it** — clarity is what `grox` and Topics read.
-2. **Go deep in a sub-niche** — that's what triggers the MoE "expert" match.
+1. **Pick a topic per post and commit to it** — clarity is what `grox`, SIDs, and Topics read.
+2. **Engage inside your niche's neighborhood** — SimClusters groups you by who engages with you; replies/engagement from in-niche accounts strengthen the right cluster.
 3. **Optimize your profile for Who-to-Follow** — clear bio, consistent feed, obvious "what I'm about."
-4. **Don't dilute** — one off-topic post weakens the embedding that every door depends on.
+4. **Don't dilute** — one off-topic post weakens the signal every door depends on.
 
 See [Scoring System → Where Candidates Come From](01-scoring-system.md#where-candidates-come-from) for how these sources feed the pipeline.
 
@@ -97,7 +102,7 @@ See [Scoring System → Where Candidates Come From](01-scoring-system.md#where-c
 
 ### Why Niching Down Works
 
-```
+```text
 Broad topics → Weak embedding signal → Poor matching
 Specific niche → Strong embedding signal → Better matching
 
@@ -119,7 +124,7 @@ Example:
 
 If you must cover multiple topics:
 
-```
+```text
 ✅ Related topics (SaaS + Pricing + Growth)
 ❌ Unrelated topics (SaaS + Cooking + Politics)
 
@@ -132,7 +137,7 @@ The algorithm will struggle to match unrelated content.
 
 ### Why Quality Matters
 
-```
+```text
 100 engaged followers > 10,000 inactive followers
 
 Because:
@@ -157,7 +162,7 @@ Because:
 
 Sustainable growth comes from compound engagement:
 
-```
+```text
 Great Content
     │
     ▼
@@ -185,14 +190,21 @@ More engagement on next post
 
 ### Breaking the Cold Start
 
-When starting out:
+🆕 **Verified new-author boost** (`author_cold_start.rs`, Aug 2026): the algorithm *reserves a slot* for small accounts. If your post is:
 
-```
+- an **original post** (not a reply or repost), AND
+- from an author with **≤1,000 followers**, AND
+- **≤48 hours old** with **<1,000 Home impressions**,
+
+…then the single best eligible post can be **lifted straight to ~feed slot 15–16** (`ColdStartSlotMin=15/Max=16`, `EnableViewerColdStart=true`). Every original post while you're small is a boosted lottery ticket — the algorithm is literally looking for new voices to test.
+
+```text
 1. Engage heavily with people in your niche
 2. Provide massive value in replies
 3. Build relationships with similar-sized accounts
 4. Get mentioned/quoted by others
-5. Slowly build in-network base
+5. Post ORIGINAL content while under 1k followers (cold-start boost)
+6. Slowly build in-network base
 ```
 
 ---
@@ -210,7 +222,7 @@ When starting out:
 
 ### Example Content Mix
 
-```
+```text
 Monday: Educational thread
 Tuesday: Question (engagement)
 Wednesday: Personal story
@@ -226,11 +238,12 @@ Sunday: Educational thread
 
 ### What Makes Content Spread
 
-From the algorithm's perspective, viral content has:
+From the algorithm's perspective, viral content has (real weights):
 
-```
-High P(reply) + High P(quote) + High P(retweet)
-                + Low P(block/mute/report)
+```text
+High P(copy_link_share ·20.0) + High P(reply ·5.0) + High P(quote ·5.0)
+  + High P(DM share ·5.0) + High P(retweet ·1.0)
+  + Low P(report ·−234 / mute ·−58.8 / not_interested ·−43.2 / block ·−31.2)
 ```
 
 ### Viral Content Types
@@ -245,7 +258,7 @@ High P(reply) + High P(quote) + High P(retweet)
 
 ### Viral Cautions
 
-```
+```text
 ⚠️ Viral doesn't always mean good
 ⚠️ Controversial viral → blocks/mutes
 ⚠️ One viral post ≠ sustained growth
@@ -289,7 +302,7 @@ High P(reply) + High P(quote) + High P(retweet)
 
 ### 30-Day Challenge
 
-```
+```text
 Week 1: Establish posting consistency
 Week 2: Focus on engagement hooks
 Week 3: Build relationships with 10 peers

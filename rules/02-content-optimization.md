@@ -6,16 +6,19 @@
 
 ## The Content Hierarchy
 
-Based on algorithm weights, prioritize content that generates:
+Based on the **real published weights** (`params/param.rs`), prioritize content that generates:
 
-```
-1. 💬 Replies (highest weight)
-2. 🔄 Quote Tweets
-3. 👤 Profile Visits → Follows
-4. 🔁 Retweets
-5. ❤️ Likes
-6. ⏱️ Dwell Time
-7. 🖱️ Clicks
+```text
+1. 🔗 Copy-link shares  (20.0 — the single biggest weight)
+2. 💬 Replies           (5.0 — and 20.0 on mutual-follow original posts)
+2. 📩 DM shares          (5.0)
+2. 🔄 Quote Tweets       (5.0)
+3. 👤 Follows            (4.0)
+4. 📤 Shares             (2.0)
+5. 🔁 Retweets           (1.0)
+6. ❤️ Likes              (0.5)
+7. ⏱️ Dwell Time         (0.004 continuous + 0.05 binary)
+8. 🖱️ Clicks             (0.4 / 0.2 / 0.07 / 0.05 family)
 ```
 
 ---
@@ -36,7 +39,7 @@ Based on algorithm weights, prioritize content that generates:
 
 ### Tier 2: Shareable Value
 
-**Best for:** Retweets, Bookmarks, Shares
+**Best for:** Copy-link shares (20.0!), DM shares (5.0), Retweets, Bookmarks
 
 | Type | Example | Why It Works |
 |------|---------|--------------|
@@ -45,6 +48,7 @@ Based on algorithm weights, prioritize content that generates:
 | Curated lists | "50 tools for [niche]" | Save for later |
 | Data/stats | "[Surprising statistic]" | Easy to share |
 | Cheat sheets | "Everything about X in one image" | Visual + useful |
+| "Send this" posts | "Send this to someone who [relatable thing]" | Directly targets the 20.0 copy-link weight |
 
 ### Tier 3: Authority Builders
 
@@ -90,7 +94,7 @@ The first line determines if people stop scrolling.
 
 ### For Dwell Time
 
-```
+```text
 ✅ DO:
 • Use line breaks (spacing helps readability)
 • Use bullet points
@@ -106,7 +110,7 @@ The first line determines if people stop scrolling.
 
 ### For Engagement
 
-```
+```text
 ✅ DO:
 • End with question or CTA
 • Tag relevant people (sparingly)
@@ -138,11 +142,13 @@ The first line determines if people stop scrolling.
 
 | Requirement | Why |
 |-------------|-----|
-| > 10 seconds | VQV weight only applies above minimum duration |
+| > 10 seconds | `MinVideoDurationMs=10_000` — the verified gate (VQV heads currently weight 0; video_open = 0.07 is the live term) |
 | Native upload | Better reach than YouTube links |
 | Captions | Most watch on mute |
 | Hook in first 3s | That's your scroll-stop moment |
 | Vertical format | Mobile-first consumption |
+
+> Reality check (Aug 2026 weights): the direct video weight is small (video_open 0.07, VQV 0.0). Video earns its keep through **dwell time + shares**, not a dedicated bonus — don't post video for the "video boost," post it because it holds attention.
 
 ### Threads
 
@@ -156,9 +162,9 @@ The first line determines if people stop scrolling.
 
 ---
 
-## Content Understanding (grox)
+## Content Understanding (grox + Semantic IDs)
 
-> 🆕 **May 2026 update.** Before any scoring happens, a content-understanding service called **`grox`** runs **classifiers and embedders** over your post. It decides *what your post is about* — the topic labels, the embedding used for retrieval, and the safety signals. The ranking model then learns relevance from engagement; **there is no manual keyword or hashtag boost.**
+> Before any scoring happens, **`grox`** runs classifiers (spam, adult, violent media) and embedders over your post, and Phoenix assigns it a **semantic ID** — residual-quantized codes (6×256) from its multimodal embedding. Same-topic posts share SID prefixes, which is how brand-new posts with zero engagement get matched to the right audience. **There is no manual keyword or hashtag boost.**
 
 **The practical rule:** write so the *machine* understands your topic on the first pass, not just humans.
 
@@ -172,10 +178,10 @@ The first line determines if people stop scrolling.
 
 **Why it pays off:**
 
-```
-Clear post → clean embedding → matches the RIGHT audience
-             → also eligible for Phoenix Topics + MoE discovery
-             → higher P(reply/like) because it reached people who care
+```text
+Clear post → clean embedding + clean SID → matches the RIGHT audience
+             → eligible for Phoenix retrieval + SimClusters + topic surfaces
+             → higher P(reply/share) because it reached people who care
 
 Vague post → noisy embedding → matched to no one in particular
              → low engagement → algorithm stops distributing it
@@ -183,20 +189,20 @@ Vague post → noisy embedding → matched to no one in particular
 
 **Hashtags & keywords:** they are *not* a ranking boost. Their only value now is as **topic signal** that helps `grox` classify you (and for human search). One or two relevant, real-word hashtags help comprehension; stuffing them adds noise and can trip the **muted-keyword filter**. (See [Filter System](../reference/filter-system.md).)
 
-> Bottom line: clarity *is* distribution. The clearer your post's topic, the more reach doors ([Phoenix Topics, MoE](06-growth-strategies.md#may-2026-reach-paths)) it can walk through.
+> Bottom line: clarity *is* distribution. The clearer your post's topic, the more reach doors ([Phoenix retrieval, SimClusters, Topics](06-growth-strategies.md#out-of-network-reach-doors)) it can walk through.
 
 ---
 
 ## Content Calendar Strategy
 
-Based on the Author Diversity Penalty (per-response decay by score-rank; example impacts below are illustrative, since the real decay/floor are [redacted](../reference/action-weights.md#the-exact-weight-values-are-redacted)):
+Based on the Author Diversity Penalty — now with **real values** (decay 0.5, floor 0.25; your Nth post in one feed response gets `0.75×0.5^(N−1) + 0.25`):
 
-| Frequency | Score Impact (illustrative) | Recommendation |
-|-----------|-----------------------------|----------------|
-| 1 post/day | ~100% | Safe, sustainable |
-| 2 posts/day | ~76% on the lower-scored one | Space 6+ hours apart |
-| 3 posts/day | ~59% on the 3rd | Consider threading instead |
-| 4+ posts/day | Diminishing returns | Quality suffers |
+| Frequency | Score Impact (real) | Recommendation |
+|-----------|---------------------|----------------|
+| 1 post/day | 100% | Safe, sustainable |
+| 2 posts/day | 62.5% on the lower-scored one | Space 6+ hours apart |
+| 3 posts/day | 43.75% on the 3rd | Consider threading instead |
+| 4+ posts/day | →25% floor, diminishing returns | Quality suffers |
 
 **Pro tip:** A thread is one published post — one author-position instead of many.
 
@@ -208,7 +214,8 @@ Before posting, ask:
 
 - [ ] Does my hook stop the scroll?
 - [ ] Will people reply to this?
-- [ ] **Could a classifier tell exactly what this post is about?** (grox clarity)
+- [ ] **Would someone copy the link and send it to a friend?** (20.0 — top weight)
+- [ ] **Could a classifier tell exactly what this post is about?** (grox + SID clarity)
 - [ ] Is this formatted for easy reading?
 - [ ] Does the media add value (and match the topic)?
 - [ ] Am I providing unique value?

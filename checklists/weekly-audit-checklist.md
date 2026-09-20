@@ -72,6 +72,7 @@ Target: 80% engaging / 20% posting
 - [ ] All content was ToS compliant?
 - [ ] No spam-like behavior?
 - [ ] No engagement bait that could backfire?
+- [ ] Checked **Settings → Under the Hood** for visibility-impacting labels? (since Sep 2026, shows safety/legal labels on your account — including recommendation-only drops followers can't see)
 
 ---
 
@@ -137,6 +138,7 @@ Target: 80% engaging / 20% posting
 ### Improvements
 
 Based on this week's audit, I will:
+
 1. Do more of: ___
 2. Do less of: ___
 3. Try new: ___
@@ -145,7 +147,7 @@ Based on this week's audit, I will:
 
 ## Quick Weekly Audit (5 min version)
 
-```
+```text
 □ Reviewed top 3 performers - identified why
 □ Reviewed bottom 3 performers - identified why
 □ Engagement rate trending positively?

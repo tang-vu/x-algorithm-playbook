@@ -1,223 +1,183 @@
 # Action Weights Reference
 
-> Complete reference for all 19 actions the algorithm predicts and weights.
+> Complete reference for the actions the algorithm predicts and the **real, published weights** it applies to them.
 
 ---
 
 ## Overview
 
-The X algorithm predicts the probability of 19 different user actions and combines them with weights:
+The Phoenix model predicts a probability for each action a viewer might take on a post. `RankingScorer` (`home-mixer/scorers/ranking_scorer.rs`) folds those predictions into one number:
 
-```
+```text
 Final Score = Σ (weight_i × P(action_i))
 ```
 
-> ✅ The **19 action heads** are confirmed in the downloadable mini Phoenix model config (May 2026 release). The repo's developer notes name 15 of them explicitly: favorite, reply, repost, quote, click, profile click, video view, photo expand, share, dwell, follow author, not interested, block author, mute author, report.
+> ✅ **As of the August 13, 2026 release, the actual weight values are public** in [`home-mixer/params/param.rs`](https://github.com/xai-org/x-algorithm/blob/main/home-mixer/params/param.rs) (defaults synced from production; last sync stamp 2026-09-18). Every number on this page is a real code value unless marked otherwise.
 
 ---
 
-## The Exact Weight Values Are Redacted
+## The #1 Misconception: Weights Scale Probabilities, Not Counts
 
-**Verified against `home-mixer/scorers/weighted_scorer.rs` (May 2026 release).** This is the most important thing to understand about "weights":
+Before the table — the caveat the xAI team themselves added to the code (Aug 14, 2026 dev notes + comments in `param.rs`/`ranking_scorer.rs`):
 
-- The code multiplies each predicted probability by a per-action weight (`p::FAVORITE_WEIGHT`, `p::REPLY_WEIGHT`, `p::BLOCK_AUTHOR_WEIGHT`, …) and sums them.
-- **Those weight *values* are NOT in the open-source repo.** They live in a `params` module that is **not published** — `home-mixer/lib.rs` declares 13 modules and `params` is not one of them; there is no `params.rs` and no build script. The code references the constants; the numbers are stripped.
+- Each weight multiplies **the model's predicted probability that *this viewer* takes the action** (or a continuous value like dwell time). It does **not** multiply raw engagement counts.
+- So the correct reading of "report = −234 vs like = 0.5" is **not** "1 report cancels 468 likes". `P(report)` is >1000× rarer than `P(like)` at baseline — the big weight exists so a rare, high-signal prediction can move the ranking at all.
+- Corollary: **coordinated mass-reporting barely works.** Predictions are personalized — bad actors' reports mostly shift the score for *similar* users. And an action only counts if it happens on a post **served in the Home Timeline** — navigating directly to a post (e.g. via a group chat link) has no ranking impact.
 
-**What this means:** every specific multiplier in this playbook (e.g. "reply ~2×", "block −10×", "report −20×") is an **illustrative estimate / relative ordering — NOT a value extracted from the code.** Treat them as direction, not as ground truth. Anyone claiming a precise ratio (e.g. "one reply = 150 likes") is inferring, not quoting the source.
+What the weights *do* tell you: the relative value of a *predicted* action, and the sign.
 
-### What the source DOES verify
+---
+
+## Positive Weights (real values)
+
+| Action | Code / param | Weight | Notes |
+|--------|--------------|--------|-------|
+| **Share via copy link** | `ShareViaCopyLinkWeight` | **20.0** | 🏆 Highest single weight — someone copying your post's URL to send it elsewhere |
+| **Reply** | `ReplyWeight` | **5.0** | **20.0** for mutual follows' original posts (see boost below) |
+| **Share via DM** | `ShareViaDmWeight` | **5.0** | Private sharing counts heavy |
+| **Quote** | `QuoteWeight` | **5.0** | Same tier as reply |
+| **Follow author** | `FollowAuthorWeight` | **4.0** | High-intent signal |
+| **Share** | `ShareWeight` | **2.0** | Generic share |
+| **Retweet** | `RetweetWeight` | **1.0** | 2× a like, far below a reply |
+| **Like** | `FavoriteWeight` | **0.5** | Baseline positive |
+| **Click (post)** | `ClickWeight` | **0.4** | Expanding/clicking the post |
+| **Open link** | `OpenLinkWeight` | **0.2** | Clicking a link in the post |
+| **Video open** | `VideoOpenWeight` | **0.07** | Opening the video player |
+| **Photo expand** | `PhotoExpandWeight` | **0.05** | |
+| **Dwell (binary)** | `DwellWeight` | **0.05** | Stopped scrolling |
+| **Quoted click** | `QuotedClickWeight` | **0.05** | Clicking the quoted post |
+| **Post unexplored** | `PostUnexploredWeight` | **0.02** | In-network only by default (`PostUnexploredWeightInNetworkOnly=true`) |
+| **Dwell time (continuous)** | `ContDwellTimeWeight` | **0.004** | Per-unit continuous — longer reads keep adding |
+| **Profile click** | `ProfileClickWeight` | **0.0** | Tracked, currently unweighted |
+| **VQV (video quality view)** | `VqvWeight` | **0.0** | Gated by 10s minimum duration, and currently weight 0 anyway |
+| **Quoted VQV** | `QuotedVqvWeight` | **0.0** | Same gate |
+| **Click dwell time** | `ContClickDwellTimeWeight` | **0.0** | Currently off |
+| **Active seconds (5m residual)** | `ContActiveSecs5mResidualNormWeight` | **0.0** | Currently off |
+
+## Negative Weights (real values)
+
+| Action | Code / param | Weight | Rank |
+|--------|--------------|--------|------|
+| **Report** | `ReportWeight` | **−234.0** | Most severe |
+| **Mute author** | `MuteAuthorWeight` | **−58.8** | 2nd — *harsher than block* |
+| **"Not interested"** | `NotInterestedWeight` | **−43.2** | 3rd — *also harsher than block* |
+| **Block author** | `BlockAuthorWeight` | **−31.2** | Mildest negative per-weight |
+| **Not dwelled** | `NotDwelledWeight` | **−0.02** | Tiny tax for being scrolled past |
+
+> ⚠️ **The old intuition was wrong about ordering.** Severity by weight is **report ≫ mute > not-interested > block**. Mutes and "not interested" votes outweigh blocks — consistent with their job of catching "this content annoyed me" signals, not just trust violations. Still remember the caveat: these multiply *predicted probabilities*, which for negatives are tiny to begin with.
+
+---
+
+## The Bidirectional Follow Boost (mutuals)
+
+Shipped July 2026 (A/B from Jul 10; broad launch Jul 13 at +20; tuned to **+15** on Jul 24):
 
 ```rust
-// weighted_scorer.rs — compute_weighted_score() sums exactly 19 terms:
-combined =  favorite·FAVORITE_W  + reply·REPLY_W       + retweet·RETWEET_W
-          + photo_expand·…       + click·…             + profile_click·…
-          + vqv·vqv_weight       + share·…             + share_via_dm·…
-          + share_via_copy_link·… + dwell·…            + quote·QUOTE_W
-          + quoted_click·…       + dwell_time·CONT_DWELL_TIME_W   // continuous
-          + follow_author·…
-          + not_interested·NOT_INTERESTED_W            // negative
-          + block_author·BLOCK_AUTHOR_W                // negative
-          + mute_author·MUTE_AUTHOR_W                  // negative
-          + report·REPORT_W;                           // negative
-
-// apply(score, weight) = score.unwrap_or(0.0) * weight  → missing predictions count as 0
+// ranking_scorer.rs — reply_weight_for()
+// Original post (not reply, not retweet) AND author is a mutual follow:
+reply_weight = 5.0 + 15.0 = 20.0
 ```
 
-Verified facts (no numbers needed):
+| Param | Value |
+|-------|-------|
+| `BidirectionalFollowReplyWeightBoost` | **15.0** |
+| `BidirectionalFollowDwellWeightBoost` | 0.0 (tested, not shipped) |
+| `EnableBidirectionalFollowHydration` | true |
 
-- **19 weighted terms**, with `favorite, reply, retweet, quote, share, share_via_dm, share_via_copy_link, click, quoted_click, profile_click, vqv, photo_expand, dwell, dwell_time, follow_author` positive and **`not_interested, block_author, mute_author, report` negative**.
-- **Video (`vqv`) only gets weight if `video_duration_ms > MIN_VIDEO_DURATION_MS`** — otherwise its weight is `0.0`. (The duration threshold value is also redacted.)
-- **`dwell_time` is continuous** (uses `CONT_DWELL_TIME_WEIGHT`), separate from the binary `dwell`.
-- After summing, an **offset/normalization** is applied (`offset_score()` + `normalize_score()`): negative-dominant scores are rescaled via `NEGATIVE_WEIGHTS_SUM / WEIGHTS_SUM` and shifted by `NEGATIVE_SCORES_OFFSET`, so the final score stays well-behaved.
+**Meaning:** for people you *mutually* follow, your original posts get a reply term worth 4× the normal reply weight — mutuals are the single most boosted relationship in the scorer. ([Official diff walkthrough](https://github.com/xai-org/x-algorithm/blob/main/docs/BIDIRECTIONAL_BOOST_CHANGE.md))
 
 ---
 
-## Positive Actions
+## After the Weighted Sum
 
-Actions that INCREASE your post's score:
+`RankingScorer` then applies, in order (default path):
 
-| # | Action | Code Name | Description | Relative Weight |
-|---|--------|-----------|-------------|-----------------|
-| 1 | **Like** | `favorite` | User likes the post | ⭐⭐ Medium |
-| 2 | **Reply** | `reply` | User replies to post | ⭐⭐⭐ High |
-| 3 | **Retweet** | `retweet` | User retweets | ⭐⭐ Medium |
-| 4 | **Quote Tweet** | `quote` | User quote tweets | ⭐⭐⭐ High |
-| 5 | **Share** | `share` | User shares post | ⭐ Low-Medium |
-| 6 | **Share via DM** | `share_via_dm` | User shares via direct message | ⭐ Low |
-| 7 | **Share via Link** | `share_via_copy_link` | User copies link | ⭐ Low |
-| 8 | **Click** | `click` | User clicks on post | ⭐ Low |
-| 9 | **Profile Click** | `profile_click` | User clicks author's profile | ⭐⭐ Medium |
-| 10 | **Follow Author** | `follow_author` | User follows after seeing post | ⭐⭐⭐ High |
-| 11 | **Photo Expand** | `photo_expand` | User expands photo | ⭐ Low |
-| 12 | **Video View** | `video_quality_view` | User watches video (quality) | ⭐⭐ Medium |
-| 13 | **Dwell** | `dwell` | User stops to read (binary) | ⭐ Low |
-| 14 | **Dwell Time** | `dwell_time` | Time spent reading (continuous) | ⭐ Variable |
-| 15 | **Quoted Click** | `quoted_click` | User clicks quoted content | ⭐ Low |
+### 1. Score offset
 
-### Notes on Positive Actions
+`offset_score(pos − neg)`: positive scores get shifted by `NEGATIVE_SCORES_OFFSET`; negative-dominant scores are rescaled by `negative_sum / total_sum` first — so heavy-negative posts compress instead of going infinitely negative.
 
-- **Reply** and **Quote Tweet** are widely treated as the highest-value positive signals (the "~2×" is an estimate, not a code value)
-- **Follow Author** is high-intent signal (user wants more)
-- **Video Quality View** only counts if video exceeds minimum duration — **verified** (`vqv_weight = 0` below `MIN_VIDEO_DURATION_MS`)
-- **Dwell Time** is continuous (`CONT_DWELL_TIME_WEIGHT`) — **verified**
+### 2. New-author (cold start) boost — `author_cold_start.rs`
+
+A genuine boost for small accounts. Eligible = **original post** (not reply/RT) from an author with **≤ 1,000 followers**, post **≤ 48h** old, **< 1,000 Home views so far**, and ranked inside the top 85% of candidates. The best eligible post is lifted to the score at ~**slot 15–16** of the feed — roughly one small-author post per response.
+
+| Param | Value |
+|-------|-------|
+| `ColdStartFollowerCap` | 1,000 followers |
+| `ColdStartImpressionThreshold` | 1,000 Home views |
+| `ColdStartMaxPostAgeSecs` | 172,800 (48h) |
+| `ColdStartSlotMin/Max` | 15 / 16 |
+| `LowImpressionsMaxPositionRatio` | 0.85 |
+| `EnableViewerColdStart` | true |
+
+### 3. Author diversity decay
+
+Real values now known: `AuthorDiversityDecay = 0.5`, `AuthorDiversityFloor = 0.25`.
+
+```text
+multiplier(k) = (1 − 0.25) × 0.5^k + 0.25     // k = your post's rank among your posts, by score
+
+k=0 (your best):  1.000
+k=1:              0.625
+k=2:              0.4375
+k=3:              0.3438
+k=4:              0.2969
+…→ floor:         0.25   (never below 25%)
+```
+
+### 4. Out-of-network discount
+
+| Param | Value | Applies to |
+|-------|-------|------------|
+| `OonWeightFactor` | **0.75** | All OON posts; **also in-network replies & retweets** (`EnableOonRescoreForInNetworkRepliesRetweets=true`) |
+| `TopicOonWeightFactor` | **0.5** | OON posts on topic-surface requests |
+
+### 5. VMRanker (diversity rerank)
+
+`vm-ranker/` — a determinantal point process over post embeddings that reorders the scored list, trading a little score for less similarity between neighbors (`VMRankerDppTheta = 0.65`, top 150 ranks). Posting content that's *different* from what's already in the feed helps; near-duplicates get spread apart.
 
 ---
 
-## Negative Actions
+## Video duration gate
 
-Actions that DECREASE your post's score:
-
-| # | Action | Code Name | Description | Relative Weight |
-|---|--------|-----------|-------------|-----------------|
-| 16 | **Not Interested** | `not_interested` | User clicks "Not interested" | ❌ Negative |
-| 17 | **Mute Author** | `mute_author` | User mutes you | ❌❌ Strong Negative |
-| 18 | **Block Author** | `block_author` | User blocks you | ❌❌❌ Very Strong |
-| 19 | **Report** | `report` | User reports post | ❌❌❌❌ Devastating |
-
-### Negative Weights — Illustrative Only
-
-> ⚠️ **These numbers are NOT from the code** (the values are redacted — see above). They're a widely-cited *relative* intuition for teaching purposes. What the source guarantees is only that these four actions carry **negative** weight and that report/block are treated as the most severe.
-
-| Action | Illustrative relative impact | Verified from source? |
-|--------|------------------------------|-----------------------|
-| Not Interested | ≈ −1× a like | Sign only (negative) |
-| Mute | ≈ −5× a like | Sign only (negative) |
-| Block | ≈ −10× a like | Sign only (negative) |
-| Report | ≈ −20× a like | Sign only (negative) |
-
-**Takeaway (safe to rely on):** negative actions actively subtract from your score, and the algorithm separates positive and negative sums with an offset — so a few blocks/reports can erase a lot of positive signal. The *exact* ratio is unknown.
-
----
-
-## Weight Categories
-
-### Tier 1: Conversation Signals (Highest Value)
-```
-reply, quote, follow_author
-```
-These indicate deep engagement and intent.
-
-### Tier 2: Amplification Signals (High Value)
-```
-retweet, share, share_via_dm
-```
-User willing to put your content in front of others.
-
-### Tier 3: Interest Signals (Medium Value)
-```
-favorite, profile_click, video_quality_view
-```
-User is interested but passive.
-
-### Tier 4: Attention Signals (Low Value)
-```
-click, photo_expand, dwell, quoted_click
-```
-Basic attention metrics.
-
-### Tier -1: Negative Signals (Subtract)
-```
-not_interested, mute, block, report
-```
-Actively hurts your score.
-
----
-
-## Special Cases
-
-### Video Quality View (VQV)
-
-```rust
-// Only applies if video exceeds minimum duration
-if video_duration_ms > MIN_VIDEO_DURATION_MS {
-    apply(vqv_score, VQV_WEIGHT)
-} else {
-    // VQV weight = 0, not counted
-}
-```
-
-**Implication:** Short video clips don't get the VQV bonus.
-
-### Dwell Time (Continuous)
-
-Unlike other binary actions, dwell time is continuous:
-
-```
-dwell_score: Binary (did user stop?)
-dwell_time: Continuous (how long in seconds?)
-```
-
-Both are weighted and contribute to score.
-
----
-
-## Algorithm Source Files
-
-| Component | Where |
-|-----------|-------|
-| Weight application (19-term sum + offset) | `home-mixer/scorers/weighted_scorer.rs` |
-| Score extraction (Phoenix Scorer) | `home-mixer/scorers/phoenix_scorer.rs` |
-| 19 action heads | `phoenix/` model config |
-| **Weight VALUES (`*_WEIGHT` constants)** | **`params` module — redacted / not published** |
-
----
-
-## Strategic Implications
-
-### Optimize For (Priority Order)
-
-1. **Replies** - Ask questions, create debate
-2. **Quote Tweets** - Create quotable insights
-3. **Follows** - Provide unique ongoing value
-4. **Retweets** - Make shareable content
-5. **Likes** - Be generally engaging
-
-### Avoid At All Costs
-
-1. **Reports** - Stay within ToS
-2. **Blocks** - Don't annoy or spam
-3. **Mutes** - Don't over-post or be off-brand
-4. **"Not Interested"** - Stay relevant to audience
+`MinVideoDurationMs = 10_000` → **10 seconds**, exactly. The gate feeds the VQV heads (both currently weight 0.0, so the gate is dormant) — but it's the verified source of the "video > 10s" rule of thumb.
 
 ---
 
 ## Quick Reference Card
 
-```
-MAXIMIZE:
-├── Reply (⭐⭐⭐)
-├── Quote (⭐⭐⭐)
-├── Follow (⭐⭐⭐)
-├── Retweet (⭐⭐)
-├── Like (⭐⭐)
-└── Video View (⭐⭐) [if > min duration]
+```text
+MAXIMIZE (real weights):
+├── Share via copy link  20.0   ← biggest single lever
+├── Reply                 5.0   (20.0 from mutual follows)
+├── Share via DM          5.0
+├── Quote                 5.0
+├── Follow author         4.0
+├── Share                 2.0
+├── Retweet               1.0
+├── Like                  0.5
+└── Click/dwell family    ≤0.4
 
-MINIMIZE (severity order — exact weights redacted):
-├── Report (❌❌❌❌ most severe)
-├── Block (❌❌❌)
-├── Mute (❌❌)
-└── Not Interested (❌)
+MINIMIZE (real weights):
+├── Report              −234.0   most severe
+├── Mute                 −58.8
+├── Not interested       −43.2
+├── Block                −31.2
+└── Not dwelled           −0.02  scroll-past tax
+
+REMEMBER: weight × predicted probability, not raw counts.
 ```
+
+---
+
+## Source Files
+
+| Component | Where |
+|-----------|-------|
+| **Weight values (production defaults)** | `home-mixer/params/param.rs` |
+| Weighted sum, offset, diversity, OON, cold-start wiring | `home-mixer/scorers/ranking_scorer.rs` |
+| New-author boost | `home-mixer/scorers/author_cold_start.rs` |
+| DPP rerank | `vm-ranker/` |
+| Action predictions | `phoenix/` (64-action taxonomy; prod ranking cfg: 8 layers, emb 2560, history 1022, candidates 64) |
 
 ---
 
