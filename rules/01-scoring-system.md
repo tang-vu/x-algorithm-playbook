@@ -1,6 +1,6 @@
 # The X Scoring System Explained
 
-> How your posts are ranked in the For You feed, based on the actual algorithm code.
+> How your posts are ranked in the For You feed, based on the actual algorithm code — **now with real published weights** (August 2026 release).
 
 ---
 
@@ -13,235 +13,166 @@ Final Score = Σ (weight_i × P(action_i))
 ```
 
 Where:
-- `P(action_i)` = Probability of user taking action (predicted by ML model)
-- `weight_i` = Importance weight for that action
+- `P(action_i)` = probability that *this specific viewer* takes the action (predicted by the Phoenix transformer)
+- `weight_i` = that action's weight — **real values are public** in `home-mixer/params/param.rs`
 
-**Example (illustrative coefficients — the real values are redacted):**
+**Example (real weights):**
 ```
-Score = (w_like × P(like)) + (w_reply × P(reply)) + (w_retweet × P(retweet)) + ...
-                           - (w_block × P(block)) - (w_report × P(report))
+Score = 0.5×P(like) + 5.0×P(reply) + 1.0×P(retweet) + 20.0×P(copy_link_share) + ...
+        − 31.2×P(block) − 234.0×P(report) − 58.8×P(mute) − 43.2×P(not_interested)
 ```
-> The weight constants (`REPLY_WEIGHT`, `BLOCK_AUTHOR_WEIGHT`, …) live in a `params` module that is **not published** in the open-source repo. We know the structure and signs; we do **not** know the exact multipliers. See [Action Weights → exact values are redacted](../reference/action-weights.md#the-exact-weight-values-are-redacted).
+
+> ⚠️ **Crucial:** weights multiply *predicted probabilities*, not raw counts. "Report = −234" does **not** mean one report cancels 468 likes — `P(report)` is >1000× rarer than `P(like)` at baseline. [Full explanation →](../reference/action-weights.md#the-1-misconception-weights-scale-probabilities-not-counts)
 
 ---
 
-## The 19 Predicted Actions
+## The Predicted Actions
 
-The Phoenix ML model predicts probability for each action:
+Phoenix's action taxonomy (64 heads in the model config) feeds ~26 weighted terms, grouped in the repo's docs into five families:
 
-### Positive Actions (Increase Score)
+| Group | Actions |
+|-------|---------|
+| **Engagement** | favorite (0.5) · reply (5.0) · repost (1.0) · quote (5.0) · share (2.0) · share via DM (5.0) · share via copy link (**20.0**) |
+| **Clicks** | post click (0.4) · profile click (0.0) · link open (0.2) · photo expand (0.05) · video open (0.07) · quoted-post click (0.05) |
+| **Attention** | video quality view (0.0) · dwell (0.05) · dwell time (0.004, continuous) · click dwell (0.0) · active seconds (0.0) |
+| **Author** | follow author (4.0) · post unexplored (0.02, in-network only) |
+| **Negative** | not interested (−43.2) · mute author (−58.8) · block author (−31.2) · report (−234.0) · not dwelled (−0.02) |
 
-| Action | Description | Relative Weight |
-|--------|-------------|-----------------|
-| `favorite` | Like the post | ⭐⭐ |
-| `reply` | Reply to the post | ⭐⭐⭐ (Highest) |
-| `retweet` | Retweet | ⭐⭐ |
-| `quote` | Quote tweet | ⭐⭐⭐ |
-| `share` | General share | ⭐ |
-| `share_via_dm` | Share via DM | ⭐ |
-| `share_via_copy_link` | Copy link | ⭐ |
-| `click` | Click on post | ⭐ |
-| `profile_click` | Click author's profile | ⭐⭐ |
-| `follow_author` | Follow after seeing post | ⭐⭐⭐ |
-| `photo_expand` | Expand photo | ⭐ |
-| `video_quality_view` | Watch video (quality) | ⭐⭐ |
-| `dwell` | Stop and read | ⭐ |
-| `dwell_time` | Time spent reading | ⭐ (continuous) |
-| `quoted_click` | Click on quoted content | ⭐ |
+**Plus a conditional boost:** original posts from **mutual follows** get reply weight **20.0** (5.0 + 15.0 `BidirectionalFollowReplyWeightBoost`, shipped July 2026).
 
-### Negative Actions (Decrease Score)
-
-| Action | Description | Relative Weight |
-|--------|-------------|-----------------|
-| `not_interested` | "Not interested" button | ❌ |
-| `mute_author` | Mute the author | ❌❌ |
-| `block_author` | Block the author | ❌❌❌ |
-| `report` | Report the post | ❌❌❌❌ (Devastating) |
+[Full weight table with params →](../reference/action-weights.md)
 
 ---
 
-## The 7-Stage Pipeline
+## The Pipeline: Post Pipeline + Blending Pipeline
 
-Before scoring even happens, your post flows through a fixed pipeline (orchestrated by `home-mixer`):
+The For You feed is built by two nested pipelines in `home-mixer`:
 
 ```
-1. Query Hydration      → assemble the viewer's recent engagement history
-2. Candidate Sourcing   → pull posts from every source (below)
-3. Candidate Hydration  → enrich with author, media, content-understanding data
-4. Pre-Scoring Filters  → drop ineligible posts (10 filters)
-5. Scoring              → run the sequential scorers (below)
-6. Selection            → sort by score, take top-K
-7. Post-Selection       → final safety + dedup pass (2 filters)
+POST PIPELINE (PhoenixCandidatePipeline)
+1. Query Hydration      → viewer's recent engagement history (the model's main input),
+                          following list, blocks/mutes, muted keywords, seen posts, topics
+2. Candidate Sourcing   → sources queried in parallel (below)
+3. Candidate Hydration  → post text/media, author details + account labels, language,
+                          engagement counts, subscription status…
+4. Pre-Scoring Filters  → 17 filters drop ineligible posts (incl. the 48h AgeFilter)
+5. Scoring              → PhoenixScorer → RankingScorer → VMRanker (below)
+6. Selection            → TopKScoreSelector: sort by score, keep top K
+7. Post-Selection       → VFFilter (visibility verdicts) → AncillaryVFFilter
+                          (drops replies/quotes of dropped posts) → DedupConversationFilter
+
+BLENDING PIPELINE (ForYouCandidatePipeline)
+8. BlenderSelector      → interleaves ranked posts with ads, Who-to-Follow, prompts
+9. Side Effects         → served-post recording, cache refresh, event logging
 ```
+
+Each stage can be toggled via feature-switch params in `home-mixer/params/param.rs`.
 
 ---
 
 ## Where Candidates Come From
 
-Your post can enter a feed through several sources — not just the two-tower retrieval:
+| Source | Network | What it is | Status |
+|--------|---------|------------|--------|
+| **Thunder** (`thunder/`) | In-network | Realtime in-memory store of followed accounts' posts | ✅ on (max 1,200) |
+| **Phoenix retrieval** (`phoenix/`) | Out-of-network | Two-tower similarity search over a checkpoint-baked index (`phoenix-rankall/`) | ✅ on (max 1,000) |
+| **SimClusters** (`simclusters/`) | Out-of-network | Clusters accounts+posts by engagement patterns | ✅ on (new Aug 2026) |
+| **Phoenix Topics** (`phoenix_topics_source.rs`) | Out-of-network | Topic-matched discovery | exists in code |
+| **Phoenix MoE** (`phoenix_moe_source.rs`) | Out-of-network | Mixture-of-experts retrieval | ⚠️ `EnablePhoenixMOESource=false` (A/B experiment) |
+| **TweetMixer** | Out-of-network | Legacy source | ⚠️ off by default |
+| **Ads / Who-to-Follow / Prompts / push-to-home** | Blending layer | Added by the Blending Pipeline, not scored as posts | ✅ on |
 
-| Source | Network | What it is |
-|--------|---------|------------|
-| **Thunder** | In-network | Realtime in-memory store of posts from accounts the viewer follows |
-| **Phoenix Retrieval** | Out-of-network | Two-tower ANN similarity search (millions → hundreds) |
-| **Phoenix Topics** | Out-of-network | Topical discovery — posts matched to topics the viewer engages with |
-| **Phoenix MoE** | Out-of-network | Mixture-of-experts retrieval for specialized interest matching |
-| **Who-to-Follow** | Out-of-network | Author/account suggestions |
-| **Ads / Prompts** | Mixed | Promoted + system content |
-
-**Why this matters:** out-of-network reach is no longer one funnel. **Phoenix Topics** and **Phoenix MoE** are distinct doors — a post with a crisp, consistent topic can be picked up by Topics even when generic retrieval misses it. (See [Growth Strategies](06-growth-strategies.md#may-2026-reach-paths).)
-
----
-
-## How Content Is Understood: `grox`
-
-New in May 2026: a dedicated **content-understanding service** (`grox`) runs **classifiers and embedders** over every post during hydration — *before* scoring. It turns raw text/media into the topic signals, embeddings, and safety labels the rest of the system reads.
-
-**Strategic consequence:** there is **no manual keyword/hashtag feature engineering** for relevance. The model learns relevance from engagement sequences, and `grox` decides what your post is *about*. Clear, on-topic, well-understood content embeds cleanly and matches the right audiences; vague or off-niche content embeds noisily and matches poorly. (See [Content Optimization](02-content-optimization.md#content-understanding-grox).)
+**Why this matters:** OON reach has two live doors — Phoenix embedding similarity and SimClusters' engagement-based clusters. Both reward the same thing: a clear, consistent topic.
 
 ---
 
-## The ML Model: Phoenix
+## How Content Is Understood: `grox` + Semantic IDs
 
-### How It Works
+Two systems decide *what your post is* before ranking:
+
+- **`grox/`** — classifiers (spam, adult, violent media) plus text/image embeddings, run at publish time.
+- **Semantic IDs** — Phoenix encodes each post's multimodal embedding into residual-quantized codes (6 levels × 256). Posts on the same topic **share SID prefixes**, so the models generalize to brand-new posts with zero engagement history — a crisp topic literally becomes your post's identity in the index.
+
+**Strategic consequence:** no keyword/hashtag boost exists. `grox` + SIDs decide what your post is *about*; engagement decides the rest. Clear topic → clean identity → matched to people who care → higher P(reply/share). (See [Content Optimization](02-content-optimization.md#content-understanding-grox-semantic-ids).)
+
+---
+
+## The ML Model: Phoenix (production code, since Aug 2026)
+
+The shipped tree is now the **real production stack** — JAX training, Rust gRPC serving, synthetic-data generators (no artifact download needed):
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         PHOENIX SCORER                           │
+│                         PHOENIX RANKER                           │
 ├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
 │  INPUT:                                                          │
-│  ├── User embedding (who is viewing)                             │
-│  ├── User history (up to 127 recent engagements)                 │
-│  └── Candidate posts (up to 64 per batch)                        │
+│  ├── User token (country, language, age bracket, apps…           │
+│  │    — NO learned per-user ID; you are what you engaged with)   │
+│  ├── History: up to 1,022 recent engagements (+ dwell times)     │
+│  └── Candidates: up to 64 per batch                              │
+│      (each = hashed IDs + semantic IDs + context features:       │
+│       post age, local hour, timezone, surface)                   │
 │                                                                  │
-│  PROCESSING:                                                     │
-│  └── Grok-based Transformer (ported from Grok-1)                 │
-│      ├── Attention mechanism                                     │
-│      └── Candidate isolation (posts can't see each other)        │
+│  MODEL: Transformer, candidate isolation                         │
+│  └── prod config: emb 2560 · 8 layers · GQA 20/4 · key 128       │
+│      vocab 100M user / 100M item / 30M author · 64 action heads  │
 │                                                                  │
-│  OUTPUT:                                                         │
-│  └── P(action) for each of 19 actions                            │
-│                                                                  │
+│  OUTPUT: P(action) per candidate + dwell-time regression         │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Released Model Architecture (mini config)
-
-The May 2026 update ships a runnable, downloadable Phoenix model (~2.8 GB via Git LFS) so the architecture is no longer a guess:
-
-| Parameter | Value |
-|-----------|-------|
-| Embedding dimension | 128 |
-| Transformer layers | 4 |
-| Attention heads | 4 |
-| Key size | 32 |
-| Widening factor | ×2 |
-| History sequence length | 127 |
-| Candidate sequence length | 64 |
-| User / Item / Author vocab | 1,000,000 each |
-| Predicted action heads | 19 |
-
-> The transformer is **ported from xAI's open-source Grok-1** and adapted for recommendations. Production uses a larger config, but the mechanics are identical. Run it yourself with `phoenix/run_pipeline.py` (retrieval → ranking in one entry point).
-
 ### Candidate Isolation
 
-Key insight: **Your post's score doesn't depend on what other posts are in the batch.**
+**Your post's score doesn't depend on what other posts are in the batch** — candidates attend only to the viewer context, never to each other. Scores are consistent and cacheable; you can't hide behind other posts, and a strong batch can't drag you down.
 
-This means:
-- Scores are consistent and cacheable
-- You can't "hide" behind other posts
-- Each post is judged independently
+### Retrieval side
+
+Two-tower: user tower (history → embedding, no user-ID embedding in prod) vs. candidate tower (post SIDs + hashed author). Trained contrastively with **favorites as the positive signal** — retrieval is optimized for what people *like*, not what they click.
 
 ---
 
-## The Scoring Pipeline
+## The Scoring Pipeline (RankingScorer order)
 
-### Step 1: Weighted Scorer
-
-```rust
-// weighted_scorer.rs — actual structure (the *_WEIGHT values are redacted)
-// apply(score, weight) = score.unwrap_or(0.0) * weight   // missing prediction → 0
-combined_score =
-    apply(favorite_score,            FAVORITE_WEIGHT)
-  + apply(reply_score,               REPLY_WEIGHT)
-  + apply(retweet_score,             RETWEET_WEIGHT)
-  + apply(photo_expand_score,        PHOTO_EXPAND_WEIGHT)
-  + apply(click_score,               CLICK_WEIGHT)
-  + apply(profile_click_score,       PROFILE_CLICK_WEIGHT)
-  + apply(vqv_score,                 vqv_weight)   // 0 unless video_duration_ms > MIN_VIDEO_DURATION_MS
-  + apply(share_score,               SHARE_WEIGHT)
-  + apply(share_via_dm_score,        SHARE_VIA_DM_WEIGHT)
-  + apply(share_via_copy_link_score, SHARE_VIA_COPY_LINK_WEIGHT)
-  + apply(dwell_score,               DWELL_WEIGHT)
-  + apply(quote_score,               QUOTE_WEIGHT)
-  + apply(quoted_click_score,        QUOTED_CLICK_WEIGHT)
-  + apply(dwell_time,                CONT_DWELL_TIME_WEIGHT)   // continuous
-  + apply(follow_author_score,       FOLLOW_AUTHOR_WEIGHT)
-  + apply(not_interested_score,      NOT_INTERESTED_WEIGHT)    // negative
-  + apply(block_author_score,        BLOCK_AUTHOR_WEIGHT)      // negative
-  + apply(mute_author_score,         MUTE_AUTHOR_WEIGHT)       // negative
-  + apply(report_score,              REPORT_WEIGHT);           // negative
-
-// Then offset_score(): if the sum goes negative it is rescaled by
-// NEGATIVE_WEIGHTS_SUM / WEIGHTS_SUM and shifted by NEGATIVE_SCORES_OFFSET,
-// then normalize_score() is applied.
-```
-
-> ✅ **Verified:** the 19 terms, their signs, the VQV duration gate, and the offset logic are real (`weighted_scorer.rs`). ❌ **Redacted:** every `*_WEIGHT` number (the `params` module is not in the open-source repo).
-
-### Step 2: Author Diversity Scorer
-
-Within a **single feed response**, sorts your posts by score and attenuates each extra post **from the same author** by its score-rank (`position`). Decays toward a `floor` — never to zero.
+After `PhoenixScorer` produces the action probabilities:
 
 ```rust
-// author_diversity_scorer.rs (verified formula; decay & floor are REDACTED)
-multiplier(position) = (1 - floor) × decay^position + floor
-// position 0 = your highest-scored post → full weight
-
-// Illustrative only (assumes decay≈0.7, floor≈0.2 — not code values):
-// Post 1: 100%   Post 2: ~76%   Post 3: ~59%   Post 4: ~47%   …→ ~20% floor
+// ranking_scorer.rs — verified order (default path)
+1. weighted score  = offset( Σ positive·w − Σ negative·w )   // 26 terms
+2. cold start      = AuthorColdStart lifts ONE small-author post to ~slot 15–16
+                     (original post · ≤1k followers · ≤48h · <1k Home views)
+3. author diversity = score × (0.75·0.5^k + 0.25)            // k = rank among your posts
+4. OON discount    = score × 0.75   (×0.5 on topic surfaces;
+                     also applied to in-network replies/retweets)
+5. VMRanker        = DPP rerank over embeddings (theta 0.65, top 150)
+                     — trades a little score for neighbor diversity
 ```
 
-> `AUTHOR_DIVERSITY_DECAY` / `AUTHOR_DIVERSITY_FLOOR` live in the unpublished `params` module — the curve shape is real, the exact numbers are not.
-
-### Step 3: OON Scorer
-
-Penalizes out-of-network content:
-
-```rust
-// oon_scorer.rs (actual): out-of-network candidates are down-weighted
-match in_network {
-    Some(false) => score * OON_WEIGHT_FACTOR,  // value REDACTED (params); understood < 1.0
-    _ => score,
-}
-```
+Real diversity curve: post #1 ×1.0, #2 ×0.625, #3 ×0.4375, #4 ×0.344 … floor ×0.25.
 
 ---
 
 ## Practical Implications
 
-### What This Means for You
+| Algorithm Behavior (now verified) | Your Strategy |
+|-----------------------------------|---------------|
+| Copy-link share = 20.0, top weight | Write "send this to…" posts people forward |
+| Reply/quote/DM-share = 5.0 | Create discussion-starting content |
+| Mutual follows: reply term 20.0 | Turn followers into mutuals |
+| New-author slot ~15–16 for ≤1k-follower accounts | Post original content while small — every post is a boosted ticket |
+| Diversity ×0.625 on your 2nd post in a feed | Space posts, use threads |
+| OON ×0.75 (and in-net replies/RTs too) | Original posts > replies/RTs for reach |
+| Video gate = 10s; VQV weight currently 0 | Video bonus is small now — video_open only 0.07 |
+| VMRanker penalizes similar neighbors | Vary your content; don't repost near-duplicates |
 
-| Algorithm Behavior | Your Strategy |
-|-------------------|---------------|
-| Replies treated as top positive signal | Create discussion-starting content |
-| Blocks/reports are strongly negative | Avoid controversial content that triggers blocks |
-| Author diversity penalty | Space posts, use threads |
-| OON penalty | Build quality followers first |
-| Video needs min duration | Make videos 10+ seconds |
-| Dwell time tracked | Create longer, engaging content |
-
-### The Score Optimization Hierarchy
+### The Score Optimization Hierarchy (updated for real weights)
 
 ```
-1. Maximize P(reply)     → Ask questions, create debate
-2. Maximize P(quote)     → Create quotable, shareable insights
-3. Maximize P(follow)    → Provide unique value
-4. Maximize P(retweet)   → Make content worth sharing
-5. Maximize P(like)      → Be likeable (baseline)
-6. Minimize P(block)     → Don't annoy people
-7. Minimize P(report)    → Stay within guidelines
+1. Maximize P(copy-link share / DM share) → forwardable, "send this" content
+2. Maximize P(reply) + P(quote)           → questions, debatable takes  (×4 on mutuals)
+3. Maximize P(follow author)              → serial value worth subscribing to
+4. Maximize P(retweet) + P(like)          → shareable, likeable baseline
+5. Grow dwell_time                        → threads, long reads
+6. Minimize P(report) ≫ P(mute), P(not-interested), P(block), P(not_dwelled)
 ```
 
 ---
@@ -250,14 +181,18 @@ match in_network {
 
 | Component | Where |
 |-----------|-------|
-| Feed orchestration (pipeline) | `home-mixer/` |
-| Weighted / diversity / OON scorers | `home-mixer/scorers/` |
-| Phoenix ML (retrieval + ranking) | `phoenix/` |
-| Grok transformer | `phoenix/` (ported from Grok-1) |
-| Unified inference entry point | `phoenix/run_pipeline.py` |
-| Content understanding (classifiers + embedders) | `grox/` |
-| Realtime in-network post store | `thunder/` |
-| Reusable pipeline framework | `candidate-pipeline/` |
+| Feed orchestration | `home-mixer/` |
+| **Production weights** | `home-mixer/params/param.rs` |
+| Weighted sum + diversity + OON + boosts | `home-mixer/scorers/ranking_scorer.rs` |
+| New-author boost | `home-mixer/scorers/author_cold_start.rs` |
+| Phoenix predictions | `home-mixer/scorers/phoenix_scorer.rs` |
+| DPP rerank | `vm-ranker/` |
+| Model train/serve (JAX + Rust) | `phoenix/` |
+| Retrieval index | `phoenix-rankall/`, `phoenix-rankall-strato/` |
+| Cluster candidates | `simclusters/` |
+| Content understanding | `grox/` |
+| In-network store | `thunder/` |
+| Visibility verdicts | `visibility-filtering/` |
 
 ---
 

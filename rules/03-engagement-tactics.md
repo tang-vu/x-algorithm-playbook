@@ -6,17 +6,21 @@
 
 ## The Engagement Priority
 
-Based on algorithm weights:
+Based on the **real published weights** (`params/param.rs`):
 
 ```
-Reply > Quote > Follow > Retweet > Like > Click > Dwell
+Copy-link share (20.0) > Reply (5.0) = DM share (5.0) = Quote (5.0)
+  > Follow (4.0) > Share (2.0) > Retweet (1.0) > Like (0.5)
+  > Click (0.4) > Dwell (0.05)
 ```
 
-Focus your effort accordingly.
+Focus your effort accordingly — and remember: a reply from a **mutual follow** on your original post is weighted **20.0** (`BidirectionalFollowReplyWeightBoost=15.0`, July 2026).
 
 ---
 
-## Driving Replies (Highest Value)
+## Driving Replies & Sends (Highest Value)
+
+> **New top lever (Aug 2026):** `ShareViaCopyLinkWeight=20.0` — the single biggest weight — fires when someone copies your post's link to send it elsewhere. DM shares are 5.0. Write "send this to someone who…" content: forwardability now outranks everything else.
 
 ### Tactics That Work
 
@@ -87,7 +91,7 @@ Quote tweets signal that your content is worth adding to.
 
 ## Driving Follows
 
-Follows have high weight because they signal "I want more from this person."
+Follows have verified high weight (4.0) because they signal "I want more from this person."
 
 ### Follow Triggers
 
@@ -181,7 +185,7 @@ Post → Immediate engagement → Algorithm sees signal → More distribution
 
 ### The Block/Mute Danger Zone
 
-Remember: a block carries strong negative weight and is hard to undo. Avoid:
+Verified values: report −234.0, **mute −58.8, not-interested −43.2**, block −31.2 — note that mutes and "not interested" are *harsher* than blocks. These multiply predicted probabilities, so avoid consistently *annoying* people, not just the rare block. Avoid:
 
 ```
 ❌ Unsolicited DMs

@@ -8,7 +8,7 @@
 
 ### Q: Is the X algorithm really open source?
 
-**A:** Yes. Twitter first open-sourced the recommendation code in April 2023, and **xAI shipped a major rewrite on May 15, 2026** ([github.com/xai-org/x-algorithm](https://github.com/xai-org/x-algorithm), Apache-2.0). The 2026 release is the primary source for this playbook: it includes a runnable end-to-end pipeline, the `grox` content-understanding service, candidate sourcing, and a **downloadable mini Phoenix model** (~2.8 GB via Git LFS) you can actually run. Core logic for scoring, filtering, and ranking is public; the exact production weights and the full-size model are still redacted.
+**A:** Yes. Twitter first open-sourced the recommendation code in April 2023, xAI shipped a major rewrite on **May 15, 2026**, and — crucially — the **August–September 2026 releases** made almost everything real ([github.com/xai-org/x-algorithm](https://github.com/xai-org/x-algorithm), Apache-2.0): the **production Phoenix model** (JAX training + Rust serving), the **actual action weights** in `home-mixer/params/param.rs`, the **visibility-filtering rule engine**, SimClusters, VMRanker, and the new-author boost. The main things still withheld: full-size model weights and some anti-spam rule internals (`scarecrow`, `botmaker` prompts/rules) to reduce gaming.
 
 **Source:** [github.com/xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) · [github.com/twitter/the-algorithm](https://github.com/twitter/the-algorithm)
 
@@ -30,25 +30,25 @@
 
 ### Q: Which action matters most?
 
-**A:** **Reply** is widely treated as the highest-value positive signal, followed by Quote and Follow. Note the exact multipliers are **not public** (see below) — this ordering is the established intuition, not a number read from the code.
+**A:** Now verified by real weights (`params/param.rs`): **share-via-copy-link = 20.0** is the single biggest weight — someone copying your post's link to send it elsewhere. Next: **reply, quote, DM share = 5.0 each**, and a reply on an original post to a **mutual follow** is effectively **20.0** (5.0 + 15.0 `BidirectionalFollowReplyWeightBoost`). A like is 0.5 — 1/40th of a copy-link share.
 
-**Source:** `home-mixer/scorers/weighted_scorer.rs` (structure) — weight values redacted
+**Source:** `home-mixer/params/param.rs`
 
 ---
 
 ### Q: How bad is getting blocked?
 
-**A:** Bad. Block carries a **negative** weight that subtracts from your score, and the scorer offsets negative-dominant scores downward — so blocks are costly. The popular "−10× a like" figure is an **estimate**, not a code value; the real multiplier is redacted.
+**A:** Bad — but *not the worst*. Real values: block = **−31.2**, while **mute = −58.8** and **"not interested" = −43.2** are harsher, and **report = −234.0** dwarfs everything. Important caveat: weights multiply *predicted probabilities per viewer*, not counts — a single block doesn't erase N likes. What kills reach is consistently making viewers predict-blockable.
 
-**Source:** `weighted_scorer.rs` references `BLOCK_AUTHOR_WEIGHT`, but the value lives in the unpublished `params` module
+**Source:** `home-mixer/params/param.rs` — `BlockAuthorWeight`, `MuteAuthorWeight`, `NotInterestedWeight`, `ReportWeight`
 
 ---
 
 ### Q: Are the exact action weights public?
 
-**A:** **No.** The May 2026 release publishes the scoring *structure* — `weighted_scorer.rs` sums 19 weighted action probabilities, names every weight constant, and shows the offset/normalization logic. But the weight *values* (`REPLY_WEIGHT`, `BLOCK_AUTHOR_WEIGHT`, `MIN_VIDEO_DURATION_MS`, …) sit in a `params` module that is **not in the repo** (`home-mixer/lib.rs` declares 13 modules; `params` isn't one, and there's no `params.rs`). So any precise multiplier you see quoted is an inference, not source-of-truth.
+**A:** **Yes — since the August 2026 release.** `home-mixer/params/param.rs` publishes the production defaults: `ShareViaCopyLinkWeight=20.0`, `ReplyWeight=5.0`, `QuoteWeight=5.0`, `ShareViaDmWeight=5.0`, `FollowAuthorWeight=4.0`, `RetweetWeight=1.0`, `FavoriteWeight=0.5`, `ReportWeight=−234.0`, `MuteAuthorWeight=−58.8`, `NotInterestedWeight=−43.2`, `BlockAuthorWeight=−31.2`, plus diversity (0.5/0.25), OON (0.75), cold-start, and VMRanker params. (This supersedes the May-era claim that values were redacted — the `params` module is now in the repo.)
 
-**Source:** `home-mixer/lib.rs`, `home-mixer/scorers/weighted_scorer.rs`
+**Source:** `home-mixer/params/param.rs` — [full table](action-weights.md)
 
 ---
 
@@ -87,19 +87,19 @@
 
 ---
 
-### Q: What are the new out-of-network sources in the May 2026 update?
+### Q: What are the out-of-network candidate sources?
 
-**A:** Out-of-network reach is no longer a single funnel. The 2026 release exposes several candidate sources: **Phoenix Retrieval** (generic similarity search), **Phoenix Topics** (topical discovery), **Phoenix MoE** (mixture-of-experts for specialized interests), **Who-to-Follow**, and **Ads/Prompts**. Practically: a post with a sharp, consistent topic can be surfaced by Topics/MoE even when generic retrieval would miss it. Topic clarity is now a multi-door reach lever.
+**A:** As of September 2026: **Phoenix Retrieval** (two-tower similarity over semantic IDs), **SimClusters** (accounts/posts clustered by engagement patterns — added Aug 2026), **Phoenix Topics** (topical discovery), **Phoenix MoE** (exists but `EnablePhoenixMOESource=false` — an A/B experiment), **Who-to-Follow**, and **Ads/Prompts** at the blending layer. Practically: sharp, consistent topics open all doors; MoE isn't live for most users yet.
 
-**Source:** `candidate-pipeline/`, `phoenix/`
+**Source:** `home-mixer/sources/`, `simclusters/`, `phoenix/`
 
 ---
 
 ### Q: Does posting time matter?
 
-**A:** Yes. The Age Filter removes posts older than a threshold. Posts need early engagement to be distributed widely. Posting when your audience is online is crucial.
+**A:** Yes. The Age Filter removes posts older than **48 hours** (`MaxPostAgeHours=48`, verified). Posts need early engagement to be distributed widely. Posting when your audience is online is crucial.
 
-**Source:** `age_filter.rs`
+**Source:** `home-mixer/filters/age_filter.rs`, `params/param.rs`
 
 ---
 
@@ -129,9 +129,9 @@ Use relevant hashtags sparingly.
 
 ### Q: Does video get boosted?
 
-**A:** Video has a dedicated score (Video Quality View), but ONLY if the video exceeds a minimum duration threshold. Short clips don't get this bonus.
+**A:** Less than you'd think, per the real weights. The minimum duration gate is exactly **10 seconds** (`MinVideoDurationMs=10_000`, verified), but `VqvWeight=0.0` right now — the dedicated video-quality-view bonus is dormant. The live video terms are `VideoOpenWeight=0.07` and dwell time. Video earns reach through engagement, not a video bonus.
 
-**Source:** `weighted_scorer.rs` - `VQV_WEIGHT`, `MIN_VIDEO_DURATION_MS`
+**Source:** `home-mixer/params/param.rs` — `MinVideoDurationMs`, `VqvWeight`, `VideoOpenWeight`
 
 ---
 
@@ -176,32 +176,37 @@ Use relevant hashtags sparingly.
 
 ### Q: What is `grox` / content understanding?
 
-**A:** New in May 2026: `grox` is a dedicated content-understanding service that runs **classifiers and embedders** over every post during hydration — *before* scoring. It produces the topic labels, embeddings, and safety signals the rest of the pipeline reads. Key takeaway: there is **no manual keyword/hashtag boost** for relevance. `grox` decides what your post is *about*, and the model learns relevance from engagement. Clear, on-topic content embeds cleanly and matches the right audiences; vague content embeds noisily and reaches no one.
+**A:** `grox` is the content-understanding service that runs **classifiers and embedders** over every post during hydration — *before* scoring. It produces topic labels, embeddings, and safety signals; Phoenix then quantizes the multimodal embedding into a **semantic ID** (6×256 codes) that becomes the post's identity for retrieval. Key takeaway: there is **no manual keyword/hashtag boost** for relevance — clarity is what gets you matched to the right audience.
 
-**Source:** `grox/`
+**Source:** `grox/`, `phoenix/`
 
 ---
 
 ### Q: How does the author diversity penalty work?
 
-**A:** Within one feed response, your posts are sorted by score, and each extra post from the same author is attenuated by its rank — decaying toward a floor (never to zero):
+**A:** Within one feed response, your posts are sorted by score, and each extra post from the same author is attenuated by its rank — decaying toward a floor (never to zero). **Real values** (Aug 2026): `decay=0.5`, `floor=0.25`:
 
 ```
-Post 1: 100%   Post 2: ~76%   Post 3: ~59%   …→ ~20% floor
-(illustrative — assumes decay≈0.7, floor≈0.2)
+Post 1: 100%   Post 2: 62.5%   Post 3: 43.75%   Post 4: 34.4%   …→ 25% floor
 ```
 
-**Formula (verified):** `multiplier = (1 - floor) × decay^position + floor`
-
-**Source:** `author_diversity_scorer.rs` — formula is real; `decay`/`floor` values are in the redacted `params` module, so the percentages above are an example, not code values.
+**Formula:** `multiplier = 0.75 × 0.5^position + 0.25` (`AuthorDiversityDecay`/`AuthorDiversityFloor` in `params/param.rs`, applied in `ranking_scorer.rs`). Steeper than previously assumed — your second post loses over a third of its score.
 
 ---
 
 ### Q: What is OON penalty?
 
-**A:** Out-of-network (OON) content (from accounts you don't follow) is multiplied by `OON_WEIGHT_FACTOR` when `in_network == false` (verified in `oon_scorer.rs`). It's understood to be a penalty (<1), but the **exact value is redacted** (`params` module). Net effect: in-network content has an advantage.
+**A:** Out-of-network content (from accounts the viewer doesn't follow) is multiplied by **`OonWeightFactor=0.75`** (verified real value; `TopicOonWeightFactor=0.5` on topic surfaces). Since Aug 2026, **in-network replies and retweets take the same ×0.75** (`EnableOonRescoreForInNetworkRepliesRetweets=true`) — only original posts keep full score.
 
-**Source:** `oon_scorer.rs`
+**Source:** `home-mixer/scorers/ranking_scorer.rs`, `home-mixer/params/param.rs`
+
+---
+
+### Q: Can my post be visible to followers but invisible to everyone else?
+
+**A:** **Yes — verified mechanism.** The visibility-filtering engine has 28 shared rules + **26 rules that fire only on recommendations to non-followers** (spam-high-recall, NSFW, DMCA'd media, do-not-amplify labels, legal takedowns, account-state labels…). That's the "OON ceiling": followers see you, recommendations don't carry you. Replies/quotes of a dropped post get dropped too (`AncillaryVFFilter`). Check **Settings → Under the Hood** — since Sep 18, 2026 it shows visibility-impacting labels on your account, including legal-compliance withholding.
+
+**Source:** `visibility-filtering/rules/registry.rs`, `under-the-hood/`
 
 ---
 
@@ -215,7 +220,7 @@ Post 1: 100%   Post 2: ~76%   Post 3: ~59%   …→ ~20% floor
 
 ### Myth: Likes are the most important metric
 
-**Fact:** Reply is the top-weighted positive signal — well above a like (exact multiplier redacted).
+**Fact:** Verified — a like is 0.5 while a copy-link share is 20.0 (40×) and a reply 5.0 (10×). Likes are near the *bottom* of the positive hierarchy.
 
 ---
 

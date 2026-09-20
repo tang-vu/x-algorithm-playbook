@@ -23,7 +23,7 @@
 
 ### ✅ The Media (if applicable)
 - [ ] Image adds value (not generic)
-- [ ] Video > 10 seconds (for VQV bonus)
+- [ ] Video > 10 seconds (verified gate; direct video weight is small — it earns via dwell)
 - [ ] Video has captions
 - [ ] Native upload (not external link)
 
@@ -43,7 +43,8 @@
 
 ### Engagement Potential
 - [ ] Could this generate replies?
-- [ ] Is it quotable/shareable?
+- [ ] **Would someone copy the link to send it to a friend?** (top weight: 20.0)
+- [ ] Is it quotable/shareable? (quote 5.0, DM share 5.0)
 - [ ] Would someone bookmark this?
 
 ---

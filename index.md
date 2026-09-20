@@ -29,13 +29,13 @@ title: X Algorithm Playbook
 ```
 Your Post Score = Σ (weight × P(action))
 
-POSITIVE: reply (highest), quote, follow, retweet, like, share
-NEGATIVE: report (most severe), block, mute, "not interested"
+POSITIVE: copy-link share (20.0), reply/quote/DM-share (5.0), follow (4.0)…
+NEGATIVE: report (−234), mute (−58.8), "not interested" (−43.2), block (−31.2)
 ```
 
-**Key insight:** The algorithm predicts 19 different user actions and weights them. Maximize positive, avoid negative.
+**Key insight:** Phoenix predicts 64 action classes feeding ~26 weighted terms — real values now public. Weights multiply *predicted probabilities*, not raw counts. Maximize positive, avoid negative.
 
-> 🆕 **Updated for the May 15, 2026 release** (refreshed every 4 weeks): new `grox` content-understanding service, new out-of-network reach paths (Phoenix Topics, MoE, Who-to-Follow), and a downloadable mini Phoenix model. **[See what changed →](reference/may-2026-update.md)**
+> 🆕 **Updated for the September 18, 2026 release:** real published action weights, the production Phoenix model, a 54-rule visibility-filtering engine, SimClusters candidates, VMRanker DPP reranking, a new-author cold-start boost, and Under the Hood transparency reports. **[See what changed →](reference/september-2026-update.md)**
 
 ---
 
@@ -46,21 +46,21 @@ NEGATIVE: report (most severe), block, mute, "not interested"
 | [10 Golden Rules](rules/00-golden-rules.md) | [Scoring System](rules/01-scoring-system.md) |
 | [Pre-Post Checklist](checklists/pre-post-checklist.md) | [Action Weights](reference/action-weights.md) |
 | [Common Mistakes](case-studies/common-mistakes.md) | [Filter System](reference/filter-system.md) |
-| [What's New (May 2026)](reference/may-2026-update.md) | [Algorithm FAQ](reference/algorithm-faq.md) |
+| [What's New (Sep 2026)](reference/september-2026-update.md) | [Algorithm FAQ](reference/algorithm-faq.md) |
 
 ---
 
 ## The 10 Golden Rules
 
-1. **Replies are king** — Reply is the top-weighted positive signal
-2. **Avoid negative actions** — Blocks/reports carry strong negative weight
-3. **Space your posts** — Author diversity penalty kicks in after 1st post
-4. **In-network first** — Your followers see you before non-followers
-5. **Video > Image > Text** — But only if video exceeds minimum duration
+1. **Get sent, get replies** — Copy-link share (20.0) + replies (5.0; 20.0 from mutuals) lead
+2. **Avoid negative actions** — Report −234, mute −58.8, not-interested −43.2, block −31.2
+3. **Space your posts** — Author diversity: 2nd post in a feed scores ×0.625
+4. **In-network first** — Verified ×0.75 out-of-network discount
+5. **Video > Image > Text** — Verified 10s minimum; direct weight is small (0.07)
 6. **Dwell time matters** — Longer content = higher engagement signal
-7. **Don't trigger filters** — 12 filters can completely hide your content
+7. **Don't trigger filters** — 17 pipeline filters + 54-rule visibility engine
 8. **Engage authentically** — Algorithm tracks your interaction patterns
-9. **Niche down** — Consistent topics improve retrieval matching
+9. **Niche down** — Semantic IDs + SimClusters reward consistent topics
 10. **Quality > Quantity** — One great post beats five mediocre ones
 
 [Read full rules →](rules/00-golden-rules.md)
@@ -69,16 +69,18 @@ NEGATIVE: report (most severe), block, mute, "not interested"
 
 ## Action Weights
 
-| Action | Relative (est.) | Impact |
-|--------|-----------------|--------|
-| Reply | Highest | Top positive |
-| Quote Tweet | High | Strong |
-| Retweet | Medium | Good |
-| Like | Medium | Baseline |
-| Block | Negative | Very negative |
-| Report | Negative | Most severe |
+| Action | Real weight | Impact |
+|--------|-------------|--------|
+| Share via copy link | **20.0** | Top positive |
+| Reply · Quote · DM share | 5.0 | Strong |
+| Follow author | 4.0 | Intent |
+| Retweet | 1.0 | Good |
+| Like | 0.5 | Baseline |
+| Block | −31.2 | Very negative |
+| "Not interested" / Mute | −43.2 / −58.8 | Harsher than block |
+| Report | −234.0 | Most severe |
 
-> Exact weight values are **redacted** from the source — these are relative estimates. [Why →](reference/action-weights.md#the-exact-weight-values-are-redacted)
+> **Real production values** — published Aug 2026 in `params/param.rs`. They scale predicted probabilities, not raw counts. [Details →](reference/action-weights.md)
 
 [Full reference →](reference/action-weights.md)
 
@@ -91,7 +93,7 @@ x-algorithm-playbook/
 ├── rules/           # 7 core strategy guides
 ├── checklists/      # 3 actionable checklists
 ├── case-studies/    # 2 real-world examples
-└── reference/       # 4 technical deep-dives
+└── reference/       # 5 technical deep-dives
 ```
 
 ---

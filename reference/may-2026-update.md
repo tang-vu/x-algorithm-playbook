@@ -1,5 +1,7 @@
 # What's New — May 15, 2026 Release
 
+> ⚠️ **Superseded.** Two later drops changed the picture significantly — the real weights, the visibility-filtering stack, and the production Phoenix code shipped in August–September 2026. Read **[What's New — August–September 2026](september-2026-update.md)** for current facts; this page is kept for history. Where they conflict (e.g. "weights are redacted"), the newer page is right.
+
 > The biggest open-source drop since the algorithm went public. This page summarizes what changed in [`xai-org/x-algorithm`](https://github.com/xai-org/x-algorithm) and — more importantly — **what it means for your reach.**
 
 ---
@@ -39,7 +41,7 @@ Out-of-network reach is no longer a single funnel:
 - **Who-to-Follow** — account suggestions.
 - **Ads / Prompts** — promoted + system content.
 
-→ See [Growth Strategies → May 2026 Reach Paths](../rules/06-growth-strategies.md#may-2026-reach-paths).
+→ See [Growth Strategies → Out-of-Network Reach Doors](../rules/06-growth-strategies.md#out-of-network-reach-doors).
 
 ### The model is now downloadable
 
@@ -74,7 +76,7 @@ uv run phoenix/run_pipeline.py --artifacts_dir artifacts/oss-phoenix-artifacts
 
 `grox` has to *understand* your post before it can match it to an audience. A vague subtweet embeds noisily and reaches no one; a clear, on-topic post embeds cleanly and is eligible for **Topics** and **MoE** discovery on top of generic retrieval.
 
-→ [Content Optimization → Content Understanding (grox)](../rules/02-content-optimization.md#content-understanding-grox)
+→ [Content Optimization → Content Understanding](../rules/02-content-optimization.md#content-understanding-grox-semantic-ids)
 
 ### 2. There are now several reach doors — topic clarity opens all of them
 

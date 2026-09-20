@@ -6,18 +6,17 @@
 
 ## The Negative Action Weights
 
-These actions carry **negative** weight and SUBTRACT from your score.
+These actions carry **negative** weight and SUBTRACT from your score — **real values** from `params/param.rs` (Aug 2026):
 
-> ⚠️ The numbers below are **illustrative estimates, not code values** — the actual weight constants are redacted from the open-source repo ([details](../reference/action-weights.md#the-exact-weight-values-are-redacted)). What's verified: all four are negative, and the scorer offsets negative-dominant scores downward.
+| Action | Real weight | Impact |
+|--------|-------------|--------|
+| Report | **−234.0** | Most severe by far |
+| Mute author | **−58.8** | Severe — *harsher than block!* |
+| "Not Interested" | **−43.2** | Severe — *harsher than block!* |
+| Block author | **−31.2** | Strong, but NOT the worst negative |
+| Not dwelled | −0.02 | Mild (skipped past fast) |
 
-| Action | Illustrative (not from code) | Impact |
-|--------|------------------------------|--------|
-| Report | ≈ -20× a like | Most severe |
-| Block | ≈ -10× a like | Very severe |
-| Mute | ≈ -5× a like | Severe |
-| "Not Interested" | ≈ -1× a like | Moderate |
-
-**Reality check:** even if the exact ratio is unknown, a handful of blocks/reports can wipe out the positive signal from many likes — so they're worth avoiding hard.
+**Reality check:** weights multiply *predicted probabilities*, not counts — `−234` doesn't mean one report cancels 468 likes; `P(report)` is just extremely rare. Two lessons: (1) the real severity order is **mute/not-interested > block**, so content that merely *annoys* people costs more than content that gets blocked; (2) negative signals are per-viewer predictions — consistently triggering them is what kills reach, not one bad actor.
 
 ---
 
@@ -62,12 +61,12 @@ These actions carry **negative** weight and SUBTRACT from your score.
 
 ---
 
-## The 12 Filters That Can Hide Your Content
+## The Filters That Can Hide Your Content
 
-Before scoring even happens, these filters can remove your post:
+Two layers can remove your post — **17 pre-scoring pipeline filters** + the **visibility-filtering rule engine** (28 shared rules + 26 that only apply to recommendations to non-followers). [Full reference →](../reference/filter-system.md)
 
 ### 1. Age Filter
-- Posts older than threshold are dropped
+- Posts older than **48 hours** (`MaxPostAgeHours=48`) are dropped — verified
 - **Avoid:** Posting at dead times
 
 ### 2. Drop Duplicates Filter
@@ -106,15 +105,17 @@ Before scoring even happens, these filters can remove your post:
 - Posts from blocked/muted authors hidden
 - **Avoid:** Getting blocked/muted
 
-### 11. VF Filter (Visibility Filtering) ⚠️
-- Spam, violence, gore, deleted posts removed
-- **Avoid:** ToS violations
+### 11. OON/NSFW/subscription/new-user filters
+- OON retweet+reply dedup, OON NSFW (SimClusters), ineligible subscriptions, new-user min-engagement, inventory holdouts, plus post-selection `DedupConversationFilter`
+- **Avoid:** N/A mostly (expected behavior)
 
-### 12. Dedup Conversation Filter
-- Multiple conversation branches deduplicated
-- **Avoid:** N/A (expected behavior)
+### 12. VF Filter (Visibility Filtering) ⚠️ — post-selection
+- A whole second engine (`visibility-filtering/`): spam, violence, gore, deleted posts, **legal takedowns**, NSFW, account-state labels → verdicts **allow / interstitial / drop**
+- **26 rules fire only for non-followers** — the "OON ceiling": visible to followers, invisible in recommendations
+- Replies/quotes of a dropped post get dropped too (`AncillaryVFFilter`)
+- **Avoid:** ToS violations, spam labels, sensitive media without marking
 
-**Most important to avoid:** #9, #10, #11
+**Most important to avoid:** #9, #10, #12 — plus account-level labels from `scarecrow`/`botmaker`/`user-cred-v2`. Check **Settings → Under the Hood** to see labels applied to your account/posts.
 
 ---
 

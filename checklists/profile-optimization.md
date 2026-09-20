@@ -6,13 +6,13 @@
 
 ## Why Profile Matters
 
-The algorithm tracks `profile_click` as a positive signal. When someone clicks your profile:
+The algorithm tracks `profile_click` — though its direct weight is currently **0.0** (`ProfileClickWeight`, verified Aug 2026). What the profile page actually converts is the **follow** (weight 4.0). When someone clicks your profile:
 
 ```
 Profile visit → They decide to follow (or not) in seconds
 ```
 
-Your profile is your conversion page.
+Your profile is your conversion page — optimize for the follow, not the click.
 
 ---
 

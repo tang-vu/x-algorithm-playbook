@@ -13,8 +13,8 @@ From the algorithm's perspective, threads are powerful because:
 | One published post | A thread is one author-position, not N competing posts |
 | High dwell time | User reads multiple tweets = strong signal |
 | Multiple engagement points | More opportunities for likes/replies |
-| Shareability | Easy to quote/retweet the thread |
-| Completion signal | Finishing a thread = strong interest |
+| Shareability | Easy to quote/retweet — and copy-link share (verified top weight: 20.0) |
+| Completion signal | Finishing a thread = strong interest (dwell) |
 
 ---
 
@@ -39,7 +39,7 @@ Tweet 10: CLOSE
 ├── Summary/takeaway
 ├── Call to action
 ├── Follow request
-└── Bookmark reminder
+└── Share prompt ("send this to…" targets the 20.0 copy-link weight)
 ```
 
 ---
@@ -69,6 +69,7 @@ Tweet 10 (Close):
 If this helped:
 • Follow @handle for more
 • RT the first tweet
+• Send it to someone who's [doing X]
 • Save for later
 
 What would you add?"
@@ -82,8 +83,8 @@ What would you add?"
 | "Lessons" framing | Promised value |
 | One lesson per tweet | Easy dwell time |
 | Clear formatting | Readability |
-| Question at end | Drives replies |
-| RT request | Explicit amplification ask |
+| Question at end | Drives replies (5.0) |
+| RT + send request | Amplification ask — copy-link share is the 20.0 top weight |
 
 ---
 

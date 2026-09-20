@@ -72,6 +72,7 @@ Target: 80% engaging / 20% posting
 - [ ] All content was ToS compliant?
 - [ ] No spam-like behavior?
 - [ ] No engagement bait that could backfire?
+- [ ] Checked **Settings → Under the Hood** for visibility-impacting labels? (since Sep 2026, shows safety/legal labels on your account — including recommendation-only drops followers can't see)
 
 ---
 
