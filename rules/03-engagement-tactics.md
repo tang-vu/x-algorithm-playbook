@@ -1,6 +1,12 @@
+---
+description: "How to earn replies, quotes, and copy-link shares — the engagement signals the X algorithm weights most heavily."
+---
+
 # Engagement Tactics
 
 > Strategies to maximize engagement signals that the algorithm rewards.
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 

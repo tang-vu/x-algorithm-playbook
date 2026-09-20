@@ -33,9 +33,11 @@ POSITIVE: copy-link share (20.0), reply/quote/DM-share (5.0), follow (4.0)…
 NEGATIVE: report (−234), mute (−58.8), "not interested" (−43.2), block (−31.2)
 ```
 
-**Key insight:** Phoenix predicts 64 action classes feeding ~26 weighted terms — real values now public. Weights multiply *predicted probabilities*, not raw counts. Maximize positive, avoid negative.
+**Key insight:** Phoenix predicts a 64-class action taxonomy feeding 26 weighted terms — real values now public. Weights multiply *predicted probabilities*, not raw counts. Maximize positive, avoid negative.
 
 > 🆕 **Updated for the September 18, 2026 release:** real published action weights, the production Phoenix model, a 54-rule visibility-filtering engine, SimClusters candidates, VMRanker DPP reranking, a new-author cold-start boost, and Under the Hood transparency reports. **[See what changed →](reference/september-2026-update.md)**
+>
+> *All numbers on this site were last verified **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (the Sep 18, 2026 release).*
 
 ---
 
@@ -58,7 +60,7 @@ NEGATIVE: report (−234), mute (−58.8), "not interested" (−43.2), block (�
 4. **In-network first** — Verified ×0.75 out-of-network discount
 5. **Video > Image > Text** — Verified 10s minimum; direct weight is small (0.07)
 6. **Dwell time matters** — Longer content = higher engagement signal
-7. **Don't trigger filters** — 17 pipeline filters + 54-rule visibility engine
+7. **Don't trigger filters** — 19 pipeline filters + 54-rule visibility engine
 8. **Engage authentically** — Algorithm tracks your interaction patterns
 9. **Niche down** — Semantic IDs + SimClusters reward consistent topics
 10. **Quality > Quantity** — One great post beats five mediocre ones

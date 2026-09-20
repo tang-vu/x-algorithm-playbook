@@ -1,6 +1,12 @@
+---
+description: "Complete table of the X algorithm's real published action weights — positive, negative, and conditional boosts with source params."
+---
+
 # Action Weights Reference
 
 > Complete reference for the actions the algorithm predicts and the **real, published weights** it applies to them.
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 

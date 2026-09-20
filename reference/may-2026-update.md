@@ -1,3 +1,7 @@
+---
+description: "What shipped in the May 15, 2026 xai-org/x-algorithm release — grox, the Phoenix demo, and retrieval sources (superseded by Aug–Sep 2026)."
+---
+
 # What's New — May 15, 2026 Release
 
 > ⚠️ **Superseded.** Two later drops changed the picture significantly — the real weights, the visibility-filtering stack, and the production Phoenix code shipped in August–September 2026. Read **[What's New — August–September 2026](september-2026-update.md)** for current facts; this page is kept for history. Where they conflict (e.g. "weights are redacted"), the newer page is right.
@@ -8,7 +12,7 @@
 
 ## TL;DR
 
-- 📅 **Released May 15, 2026** · Apache-2.0 · updated **every 4 weeks** with developer notes.
+- 📅 **Released May 15, 2026** · Apache-2.0 · the repo now **syncs near-daily**, with notable-update dev notes landing roughly monthly (Aug 13/14, Sep 18).
 - 🧠 **New `grox` content-understanding service** — classifiers + embedders decide *what your post is about* before it's scored.
 - 🚪 **New out-of-network reach doors** — Phoenix **Topics**, Phoenix **MoE**, **Who-to-Follow** (not just generic retrieval).
 - ⚙️ **Runnable end-to-end pipeline** — a single `phoenix/run_pipeline.py` (retrieval → ranking).

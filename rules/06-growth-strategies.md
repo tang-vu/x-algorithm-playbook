@@ -1,6 +1,12 @@
+---
+description: "Long-term X growth: in-network vs out-of-network reach, SimClusters, semantic IDs, and the new-author cold-start boost."
+---
+
 # Growth Strategies
 
 > Long-term strategies for sustainable growth based on algorithm mechanics.
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 

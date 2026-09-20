@@ -1,6 +1,12 @@
+---
+description: "Answers about the X algorithm: verified weights, filters, visibility rules, and myth-busting with source-code references."
+---
+
 # Algorithm FAQ
 
 > Frequently asked questions about the X algorithm, answered with code references.
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 
@@ -16,7 +22,7 @@
 
 ### Q: How often does the algorithm change?
 
-**A:** xAI now publishes updates to the open-source repo **every 4 weeks, with developer notes** explaining what changed. The fundamental mechanics (Grok-based scoring, filtering, two-tower retrieval) are stable; specific weights, sources, and model configs evolve release to release. Re-check the repo's developer notes monthly.
+**A:** xAI now publishes updates continuously — the repo **syncs near-daily**, with notable-update **developer notes landing roughly monthly** (May 15, Aug 13/14, Sep 18 in 2026). The fundamental mechanics (Phoenix scoring, filtering, two-tower retrieval) are stable; specific weights, sources, and model configs evolve release to release. Re-check the repo's developer notes monthly.
 
 ---
 
@@ -98,7 +104,7 @@
 
 ### Q: Does posting time matter?
 
-**A:** Yes. The Age Filter removes posts older than **48 hours** (`MaxPostAgeHours=48`, verified). Posts need early engagement to be distributed widely. Posting when your audience is online is crucial.
+**A:** Yes. The Age Filter removes posts older than **48 hours** (`MAX_POST_AGE = 48 * 60 * 60` seconds, verified in [`home-mixer/params/config.rs`](https://github.com/xai-org/x-algorithm/blob/main/home-mixer/params/config.rs)). Posts need early engagement to be distributed widely. Posting when your audience is online is crucial.
 
 **Source:** `home-mixer/filters/age_filter.rs`, `params/param.rs`
 
@@ -164,7 +170,7 @@ Use relevant hashtags sparingly.
 
 **A:** A key ML architecture decision. When the transformer scores candidates, each post can only "see" the user context—not other candidate posts. This ensures your score doesn't depend on what other posts are in the batch.
 
-**Source:** `phoenix/grok.py` - `make_recsys_attn_mask()`
+**Source:** `phoenix/xrex/models/recsys_model.py` + `phoenix/xrex/models/attention.py` (`segment_ids` give all candidates one segment, so they can't attend to each other; the May demo called this `make_recsys_attn_mask` in `phoenix/grok.py`)
 
 ---
 

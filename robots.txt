@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tang-vu.github.io/x-algorithm-playbook/sitemap.xml

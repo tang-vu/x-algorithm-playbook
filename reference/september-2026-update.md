@@ -1,6 +1,12 @@
+---
+description: "What changed in the Aug–Sep 2026 X algorithm releases — real published weights, visibility filtering, production Phoenix, Under the Hood."
+---
+
 # What's New — August–September 2026 Releases
 
 > The follow-up drops to the May 2026 release are the biggest yet: the **actual scoring weights are now public**, the entire **visibility-filtering and labeling stack** shipped, and the **production Phoenix model code** replaced the demo. This page covers the Aug 13, Aug 14, and Sep 18, 2026 dev notes (plus the July mutual-follow boost they documented).
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 
@@ -85,8 +91,9 @@ Author-diversity decay (×0.625 → 0.25 floor) handles repeat *authors*; VMRank
 
 - Grox LLM prompt files (`j2`)
 - Some botmaker rules
-- `NEGATIVE_SCORES_OFFSET` normalization constant value
 - Production model *weights* (code is public; trained checkpoints are not)
+
+Previously listed here: `NEGATIVE_SCORES_OFFSET` is in fact published — it's `0.001` in [`home-mixer/params/config.rs`](https://github.com/xai-org/x-algorithm/blob/main/home-mixer/params/config.rs) (a compile-time constant, not a `param.rs` entry).
 
 ---
 

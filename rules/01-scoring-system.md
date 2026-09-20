@@ -1,6 +1,12 @@
+---
+description: "How X ranks posts in For You: the scoring formula, the 26 weighted action terms, Phoenix predictions, and reranking — with real published values."
+---
+
 # The X Scoring System Explained
 
 > How your posts are ranked in the For You feed, based on the actual algorithm code — **now with real published weights** (August 2026 release).
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 
@@ -30,7 +36,7 @@ Score = 0.5×P(like) + 5.0×P(reply) + 1.0×P(retweet) + 20.0×P(copy_link_share
 
 ## The Predicted Actions
 
-Phoenix's action taxonomy (64 heads in the model config) feeds ~26 weighted terms, grouped in the repo's docs into five families:
+Phoenix's action taxonomy (64 discrete action classes in the model config) feeds **26 weighted terms**, grouped in the repo's docs into five families:
 
 | Group | Actions |
 |-------|---------|
@@ -57,7 +63,7 @@ POST PIPELINE (PhoenixCandidatePipeline)
 2. Candidate Sourcing   → sources queried in parallel (below)
 3. Candidate Hydration  → post text/media, author details + account labels, language,
                           engagement counts, subscription status…
-4. Pre-Scoring Filters  → 17 filters drop ineligible posts (incl. the 48h AgeFilter)
+4. Pre-Scoring Filters  → 19 filters drop ineligible posts (incl. the 48h AgeFilter)
 5. Scoring              → PhoenixScorer → RankingScorer → VMRanker (below)
 6. Selection            → TopKScoreSelector: sort by score, keep top K
 7. Post-Selection       → VFFilter (visibility verdicts) → AncillaryVFFilter
@@ -82,6 +88,7 @@ Each stage can be toggled via feature-switch params in `home-mixer/params/param.
 | **Phoenix Topics** (`phoenix_topics_source.rs`) | Out-of-network | Topic-matched discovery | exists in code |
 | **Phoenix MoE** (`phoenix_moe_source.rs`) | Out-of-network | Mixture-of-experts retrieval | ⚠️ `EnablePhoenixMOESource=false` (A/B experiment) |
 | **TweetMixer** | Out-of-network | Legacy source | ⚠️ off by default |
+| **CachedPosts** (`cached_posts_source.rs`) | Mixed | Posts cached from earlier in the session (max 750) | ✅ on |
 | **Ads / Who-to-Follow / Prompts / push-to-home** | Blending layer | Added by the Blending Pipeline, not scored as posts | ✅ on |
 
 **Why this matters:** OON reach has two live doors — Phoenix embedding similarity and SimClusters' engagement-based clusters. Both reward the same thing: a clear, consistent topic.

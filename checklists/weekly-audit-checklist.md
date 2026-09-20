@@ -1,6 +1,12 @@
+---
+description: "A weekly audit loop for X reach: weight-aligned content review, engagement stats, and filter checks."
+---
+
 # Weekly Audit Checklist
 
 > Run this audit every week to optimize your X strategy.
+>
+> *Last verified: **September 20, 2026** against [xai-org/x-algorithm](https://github.com/xai-org/x-algorithm) @ [`8b25829`](https://github.com/xai-org/x-algorithm/commit/8b25829717a4f104dd04403ee7d0253c5fedb1b7) (Sep 18, 2026 release).*
 
 ---
 
